@@ -1,11 +1,17 @@
-import { goto } from '$app/navigation';
+import {PUBLIC_BACKEND_URL} from "$env/static/public";
 
-export async function apiFetch(input: RequestInfo | URL, init: RequestInit = {}) {
-    const res = await fetch(input, { ...init, credentials: 'same-origin' });
+export async function apiCall(
+    endpoint: string,
+    options: RequestInit = {}
+) {
+    const url = `${PUBLIC_BACKEND_URL}${endpoint}`
 
-    if (res.status === 401) {
-        await goto('/login');
-    }
-
-    return res;
+    return fetch(url, {
+        ...options,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    })
 }

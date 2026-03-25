@@ -7,20 +7,5 @@ export default defineConfig({
     server: {
         port: 5173,
         strictPort: true,
-        origin: 'http://localhost:5173',
-        cors: true,
-        proxy: {
-            '/api': {
-                target: 'http://localhost:8080',
-                changeOrigin: true,
-                secure: false
-            }
-        },
-        hmr: {
-            protocol: 'ws',
-            host: 'localhost',
-            port: 5173,
-            clientPort: 5173
-        }
     }
 });

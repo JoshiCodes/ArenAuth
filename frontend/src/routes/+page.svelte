@@ -9,7 +9,7 @@ import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
 <Navbar />
 
 <main class="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-test
+
 </main>
 
 <Footer />

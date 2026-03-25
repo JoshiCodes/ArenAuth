@@ -4,6 +4,7 @@
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import FloatingInput from "$lib/components/ui/FloatingInput.svelte";
     import Button from "$lib/components/ui/Button.svelte";
+    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
 
     let name: string = "";
     let description: string = "";
@@ -21,7 +22,7 @@
         fd.append("description", description);
         if(image)
             fd.append("image", image);
-        fetch("/api/internal/projects", {
+        fetch(PUBLIC_BACKEND_URL + "/api/internal/projects", {
             method: "POST",
             body: fd
         }).then(async res => {
@@ -55,7 +56,7 @@
             <FloatingInput id="name" label="Project name" required bind:value={name} class="col-span-1 row-span-1" />
             <div class="col-span-1 row-span-2 flex flex-col gap-y-4 justify-center content-center items-center">
                 <!-- TODO -->
-                <img src={"https://ui-avatars.com/api/?background=893DC3FF&color=fff&name=" + (name || "New Project")}
+                <img src={PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", (name || "New Project"))}
                      alt="Project icon"
                      class="mt-2 md:mt-4 w-1/3 object-cover rounded-lg" />
                 <Button variant="secondary" disabled>

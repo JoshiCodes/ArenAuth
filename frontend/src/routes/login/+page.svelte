@@ -7,6 +7,7 @@
     import Button from "$lib/components/ui/Button.svelte";
     import FloatingInput from "$lib/components/ui/FloatingInput.svelte";
     import Link from "$lib/components/ui/Link.svelte";
+    import { PUBLIC_BACKEND_URL } from "$env/static/public";
 
     let username = "";
     let password = "";
@@ -27,17 +28,22 @@
         isLoading = true;
 
         try {
-            const response = await fetch("/api/internal/auth/login", {
+            const response = await fetch(PUBLIC_BACKEND_URL + "/api/internal/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password }),
+                credentials: 'include'
             });
+            console.log(1, response)
             const data = await response.json();
+            console.log(2, data)
             if (!response.ok) {
                 error = data.error || "Login failed.";
                 isLoading = false;
                 return;
             }
+
+            console.log(3)
 
             // redirect
             await goto(redirectTarget);

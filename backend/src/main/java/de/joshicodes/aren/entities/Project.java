@@ -34,6 +34,9 @@ public class Project extends PanacheEntityBase {
     @Column(name = "redirect_uri", nullable = false)
     public Set<String> redirectUris = new HashSet<>();
 
+    @Column(name = "client_secret", nullable = false)
+    public String clientSecret;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     public User owner;

@@ -3,6 +3,7 @@ package de.joshicodes.aren.resource.internal;
 import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.entities.dto.ProjectDTO;
+import de.joshicodes.aren.security.UserExtractor;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.Nullable;
@@ -25,19 +26,12 @@ public class ProjectsResources {
     SecurityIdentity identity;
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getProject(String id) {
-        if(identity == null || identity.getPrincipal() == null || identity.getAttributes() == null) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-        final UUID userId;
-        try {
-            userId = identity.getAttribute("userId");
-            if(userId == null) {
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-            }
-        } catch (Exception e) {
+
+        final User user = UserExtractor.getUser(identity);
+        if(user == null) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
@@ -48,6 +42,39 @@ public class ProjectsResources {
             return Response.status(Response.Status.BAD_REQUEST).entity(
                     Map.of("error", "Invalid project ID")
             ).build();
+        }
+
+        final Project project = Project.findById(projectId);
+        if(project == null || project.owner == null || !project.owner.id.equals(user.id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(ProjectDTO.from(project)).build();
+
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteProject(String id) {
+
+        final User user = UserExtractor.getUser(identity);
+        if(user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        final UUID projectId;
+        try {
+            projectId = UUID.fromString(id);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "Invalid project ID")
+            ).build();
+        }
+
+        final Project project = Project.findById(projectId);
+        if(project == null || project.owner == null || !project.owner.id.equals(user.id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         boolean success = Project.deleteById(projectId);
@@ -63,25 +90,12 @@ public class ProjectsResources {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSelf() {
 
-        if(identity == null || identity.getPrincipal() == null || identity.getAttributes() == null) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-        final UUID userId;
-        try {
-            userId = identity.getAttribute("userId");
-            if(userId == null) {
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-
-        final User user = User.findById(userId);
+        final User user = UserExtractor.getUser(identity);
         if(user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        final List<Project> projects = Project.list("owner.id", userId);
+        final List<Project> projects = Project.list("owner.id", user.id);
         final List<ProjectDTO> dtos = projects.stream().map(ProjectDTO::from).toList();
         return Response
                 .ok(dtos)
@@ -93,9 +107,12 @@ public class ProjectsResources {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(CreateProjectDTO dto) {
-        if(identity == null || identity.getPrincipal() == null || identity.getAttributes() == null) {
+
+        final User user = UserExtractor.getUser(identity);
+        if(user == null) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+
         if(dto.name == null || dto.name.trim().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(
                     Map.of("error", "Name cannot be empty")
@@ -109,23 +126,9 @@ public class ProjectsResources {
         if(identity == null || identity.getPrincipal() == null || identity.getAttributes() == null) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        final UUID userId;
-        try {
-            userId = identity.getAttribute("userId");
-            if(userId == null) {
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-
-        final User user = User.findById(userId);
-        if(user == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
 
         if(
-                Project.list("owner.id", userId)
+                Project.list("owner.id", user.id)
                         .stream()
                         .map(p -> (Project) p)
                         .anyMatch(

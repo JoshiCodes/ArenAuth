@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Full Stack" type="CompoundRunConfigurationType">
+    <toRun name="Frontend (SvelteKit)" type="js.build_tools.npm" />
+    <toRun name="Backend (Quarkus)" type="QuarkusRunConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>

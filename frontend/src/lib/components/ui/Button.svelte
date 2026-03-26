@@ -33,7 +33,7 @@
         secondary:
             'bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-300 dark:text-slate-700 dark:hover:bg-slate-400 dark:hover:text-gray-50 focus-visible:ring-slate-400 disabled:bg-slate-100 disabled:text-slate-400',
         danger:
-            'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600 disabled:bg-red-300',
+            'bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 focus-visible:ring-red-600 disabled:bg-red-300',
         ghost:
             'border dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
     };

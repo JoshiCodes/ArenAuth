@@ -1,6 +1,7 @@
 package de.joshicodes.aren.entities;
 
 import io.netty.handler.codec.base64.Base64Encoder;
+import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
@@ -44,10 +45,12 @@ public class Project extends PanacheEntityBase {
     @JoinColumn(name = "owner_id", nullable = false)
     public User owner;
 
-    public void generateSecret() {
+    public String generateSecret() {
         byte[] randomBytes = new byte[32];
         new SecureRandom().nextBytes(randomBytes);
-        this.clientSecret = UUID.randomUUID().toString().split("-")[0] + "_" + Base64.getUrlEncoder().encodeToString(randomBytes);
+        final String secret = UUID.randomUUID().toString().split("-")[0] + "_" + Base64.getUrlEncoder().encodeToString(randomBytes);
+        this.clientSecret = BcryptUtil.bcryptHash(secret);
+        return secret;
     }
 
 }

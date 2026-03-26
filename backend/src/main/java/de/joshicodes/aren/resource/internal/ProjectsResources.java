@@ -149,6 +149,39 @@ public class ProjectsResources {
         return Response.ok(ProjectDTO.from(project)).build();
     }
 
+    @POST
+    @Path("/{id}/rotateSecret")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response rotateSecret(String id) {
+        final User user = UserExtractor.getUser(identity);
+        if(user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        final UUID projectId;
+        try {
+            projectId = UUID.fromString(id);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "Invalid project ID")
+            ).build();
+        }
+
+        final Project project = Project.findById(projectId);
+        if(project == null || project.owner == null || !project.owner.id.equals(user.id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        final String secret = project.generateSecret();
+
+        return Response.ok(
+                Map.of("id", projectId.toString(),
+                        "newSecret", secret)
+        ).build();
+
+    }
+
+
     public static class CreateProjectDTO {
         @RestForm("name")
         public @Nullable String name;

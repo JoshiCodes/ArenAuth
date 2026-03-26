@@ -9,6 +9,7 @@
     import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
     import BarInput from "$lib/components/ui/BarInput.svelte";
+    import Modal from "$lib/components/Modal.svelte";
 
     $: projectId = String($page.params.project);
     $: data = { id: '', name: "Unknown", description: "", imageBlob: "" };
@@ -45,11 +46,37 @@
             });
     })
 
+    function resetToken() {
+        resetModalShown = false;
+        apiCall(`/api/internal/projects/${projectId}/rotateSecret`, {method: 'POST'}).then(async (res) => {
+            if (res.ok) {
+                const json = await res.json();
+                secret = json.newSecret;
+            } else {
+                alert(`Failed to reset Client Secret: ${res.status} ${res.statusText}`);
+            }
+        });
+    }
 
 </script>
 
 <Navbar />
 <DashboardSidebar />
+
+<Modal id="reset-token-modal" title="Reset Client Secret" bind:visible={resetModalShown}>
+    <p>
+        Are you sure you want to create a new Client Secret? <br>
+        This action cannot be undone, and the old Client Secret will no longer work.
+    </p>
+    <div class="mt-2 md:mt-4">
+        <Button variant="danger" onClick={resetToken}>
+            Reset
+        </Button>
+        <Button variant="primary" onClick={() => resetModalShown = false}>
+            Cancel
+        </Button>
+    </div>
+</Modal>
 
 <DashboardComponent>
     <div class="mt-6 w-full h-full">

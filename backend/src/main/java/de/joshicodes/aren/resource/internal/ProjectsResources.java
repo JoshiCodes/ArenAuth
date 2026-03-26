@@ -144,6 +144,7 @@ public class ProjectsResources {
         project.description = dto.description;
         project.imageBlob = null; // TODO
         project.owner = user;
+        project.generateSecret();
         project.persist();
         return Response.ok(ProjectDTO.from(project)).build();
     }

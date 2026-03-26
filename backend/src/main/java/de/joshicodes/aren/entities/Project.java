@@ -1,8 +1,11 @@
 package de.joshicodes.aren.entities;
 
+import io.netty.handler.codec.base64.Base64Encoder;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -40,5 +43,11 @@ public class Project extends PanacheEntityBase {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     public User owner;
+
+    public void generateSecret() {
+        byte[] randomBytes = new byte[32];
+        new SecureRandom().nextBytes(randomBytes);
+        this.clientSecret = UUID.randomUUID().toString().split("-")[0] + "_" + Base64.getUrlEncoder().encodeToString(randomBytes);
+    }
 
 }

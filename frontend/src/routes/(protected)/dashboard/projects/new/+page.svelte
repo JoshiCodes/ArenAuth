@@ -24,6 +24,7 @@
             fd.append("image", image);
         fetch(PUBLIC_BACKEND_URL + "/api/internal/projects", {
             method: "POST",
+            credentials: 'include',
             body: fd
         }).then(async res => {
             console.log(res)

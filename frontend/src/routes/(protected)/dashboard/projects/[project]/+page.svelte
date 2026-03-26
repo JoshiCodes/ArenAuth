@@ -7,6 +7,8 @@
     import {onMount} from "svelte";
     import {apiCall} from "$lib/api";
     import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import Button from "$lib/components/ui/Button.svelte";
+    import BarInput from "$lib/components/ui/BarInput.svelte";
 
     $: projectId = String($page.params.project);
     $: data = { id: '', name: "Unknown", description: "", imageBlob: "" };
@@ -70,6 +72,15 @@
                     <div>
                         <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt="Project Image" class="w-1/2 h-auto rounded-lg object-cover shadow-lg" />
                     </div>
+                    <div class="w-full">
+                        <div class="flex-row justify-center content-center items-center">
+                            <BarInput id="clientToken" label="Client Secret" class="col-span-3" />
+                            <Button class="col-span-1">
+                                Generate New
+                            </Button>
+                        </div>
+                    </div>
+
                 </div>
             {/if}
 

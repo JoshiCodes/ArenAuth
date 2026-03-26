@@ -45,6 +45,7 @@ public class Project extends PanacheEntityBase {
     @JoinColumn(name = "owner_id", nullable = false)
     public User owner;
 
+    @Transient
     public String generateSecret() {
         byte[] randomBytes = new byte[32];
         new SecureRandom().nextBytes(randomBytes);

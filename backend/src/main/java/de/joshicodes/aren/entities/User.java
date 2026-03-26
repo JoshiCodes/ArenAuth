@@ -45,6 +45,7 @@ public class User extends PanacheEntityBase {
     /**
      * Factory Method to create new User
      */
+    @Transient
     public static void add(String username, String clearTextPassword, String role, String email) {
         User user = new User();
         user.username = username;

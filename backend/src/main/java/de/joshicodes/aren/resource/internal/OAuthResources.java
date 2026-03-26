@@ -12,13 +12,13 @@ import java.net.URISyntaxException;
 @Path("/api/internal/projects")
 @Authenticated
 public class OAuthResources {
-    
+
     @ConfigProperty(name = "aren.frontend.url")
     String frontendUrl;
 
     /**
      * The default endpoint redirected to by the client.
-     * Checks for GET/PATH params:
+     * Checks for GET/QUERY params:
      *  -
      * Creates a data object,
      * redirects to frontend with /consent?req=[data obj. id]
@@ -26,9 +26,12 @@ public class OAuthResources {
      */
     @GET
     public Response authorize() {
+
+
+
         try {
             return Response.seeOther(
-                    new URI("")
+                    new URI(frontendUrl + "/consent?req=")
             ).build();
         } catch (URISyntaxException e) {
             e.printStackTrace();

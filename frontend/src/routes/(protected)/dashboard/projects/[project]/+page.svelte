@@ -16,6 +16,10 @@
     $: error = '';
     $: isLoading = true;
 
+    $: secret = '';
+
+    $: resetModalShown = false;
+
     onMount(() => {
         apiCall(`/api/internal/projects/${projectId}`)
             .then(async (res) => {
@@ -55,32 +59,33 @@
             </p>
 
             <h1 class="mt-2 text-4xl font-bold text-zinc-700 dark:text-zinc-50">{data.name}</h1>
-            <div class="mt-6 inline-flex items-center rounded-full border border-zinc-300 bg-zinc-100 px-3 py-1 text-sm text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
-                Project ID: <span class="ml-2 font-mono">{projectId}</span>
-            </div>
 
             {#if isLoading}
                 <p class="mt-4 text-zinc-600 dark:text-zinc-400">Loading project data...</p>
             {:else if error}
                 <p class="mt-4 text-red-600 dark:text-red-400">{error}</p>
             {:else}
-                <div class="mt-6 grid md:grid-cols-2">
-                    <div class="">
-                        <h2 class="text-2xl font-semibold text-zinc-700 dark:text-zinc-50">Description</h2>
-                        <p class="mt-2 text-zinc-700 dark:text-zinc-300">{data.description || "No description provided."}</p>
-                    </div>
-                    <div>
-                        <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt="Project Image" class="w-1/2 h-auto rounded-lg object-cover shadow-lg" />
-                    </div>
-                    <div class="w-full">
-                        <div class="flex-row justify-center content-center items-center">
-                            <BarInput id="clientToken" label="Client Secret" class="col-span-3" />
-                            <Button class="col-span-1">
-                                Generate New
-                            </Button>
+                <div class="mt-6 grid md:grid-cols-2 md:grid-rows-3">
+                    <div class="flex flex-col justify-start gap-y-2 md:gap-y-6">
+                        <div class="">
+                            <h2 class="text-2xl font-semibold text-zinc-700 dark:text-zinc-50">Description</h2>
+                            <p class="mt-2 text-zinc-700 dark:text-zinc-300">{data.description || "No description provided."}</p>
+                        </div>
+                        <div class="w-full flex flex-row gap-x-4">
+                            <div class="">
+                                <BarInput disabled id="clientId" label="Client ID" class="w-1/2" placeholder={projectId} copyButton copyValue={projectId} />
+                            </div>
+                            <div class="">
+                                <BarInput disabled id="clientToken" label="Client Secret" class="w-1/2" value={secret ? secret : ''} placeholder={secret ? "" : "Hidden for security"} copyButton copyButtonDisabled={!secret}></BarInput>
+                                <Button variant="ghost" size="sm" class="mt-2" onClick={() => resetModalShown = true}>
+                                    Reset Secret
+                                </Button>
+                            </div>
                         </div>
                     </div>
-
+                    <div class="col-span-1 flex justify-center">
+                        <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt="Project Image" class="w-1/3 h-auto rounded-lg object-cover shadow-lg" />
+                    </div>
                 </div>
             {/if}
 

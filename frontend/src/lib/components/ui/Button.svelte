@@ -35,7 +35,7 @@
         danger:
             'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600 disabled:bg-red-300',
         ghost:
-            'bg-transparent text-slate-900 hover:bg-slate-100 focus-visible:ring-slate-400 disabled:text-slate-400'
+            'border dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
     };
 
     $: classes = [

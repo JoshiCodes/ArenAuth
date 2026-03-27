@@ -21,18 +21,26 @@
                 <UserRound class="h-5 w-5" />
                 <span>{me.username}</span>
             </div>
-            <a href="/logout">
-                <Button variant="secondary">
-                    Logout
-                </Button>
-            </a>
+            <ThemeToggle />
+            <div class="flex items-center gap-x-2">
+                <a href="/dashboard">
+                    <Button variant="secondary">
+                        Dashboard
+                    </Button>
+                </a>
+                <a href="/logout">
+                    <Button variant="ghost">
+                        Logout
+                    </Button>
+                </a>
+            </div>
         {:else}
+            <ThemeToggle />
             <a href="/login">
                 <Button>
                     Login
                 </Button>
             </a>
         {/if}
-        <ThemeToggle />
     </div>
 </nav>

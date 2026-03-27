@@ -215,7 +215,7 @@
                     </div>
 
                         <div class="col-span-1 flex justify-center">
-                            <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt="Project Image" class="w-full rounded-lg object-cover shadow-lg" />
+                            <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt={"Project Image"} class="w-full rounded-lg object-cover shadow-lg" />
                         </div>
 
                 </div>

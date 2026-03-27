@@ -15,3 +15,16 @@ export async function apiCall(
         }
     })
 }
+
+export async function fetchAvailableScopes() {
+
+    let availableScopes: [{name: string, description: string}]|[] = [];
+
+    const res = await apiCall("/oauth2/scopes");
+    if(res.ok) {
+        const json = await res.json();
+        availableScopes = json || [];
+    }
+
+    return availableScopes;
+}

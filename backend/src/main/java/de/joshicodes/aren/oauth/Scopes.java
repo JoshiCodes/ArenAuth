@@ -5,20 +5,16 @@ public enum Scopes {
     /**
      * OpenID Scope
      */
-    OPEN_ID("openid"),
+    OPEN_ID("openid", "OpenID Connect"),
     /**
      * Username / Avatar
      */
-    IDENTIFY("identify"),
-    /**
-     * Update Username / Avatar
-     */
-    DATA_WRITE("identity.write", true),
+    IDENTIFY("profile", "View your Username and Avatar"),
     /**
      * View all Applications the user has access to
      */
-    APPLICATIONS_READ("applications.read"),
-    EMAIL("email");
+    APPLICATIONS_READ("applications.read", "View your applications"),
+    EMAIL("email", "View your email address"),;
 
     // TODO:
     //  - Config Scope to read/write application-config
@@ -31,27 +27,19 @@ public enum Scopes {
     //    as soon as webhooks are implemented
 
     private final String id;
-    private final boolean warn;
+    private final String fallbackDescription;
 
-    Scopes(String id) {
-        this(id, false);
-    }
-
-    Scopes(final String id, boolean warn) {
+    Scopes(final String id, final String fallbackDescription) {
         this.id = id;
-        this.warn = warn;
+        this.fallbackDescription = fallbackDescription;
     }
 
     public String getId() {
         return id;
     }
 
-    /**
-     * If the user should be warned to accept this scope
-     * @return true if the user should be warned.
-     */
-    public boolean doWarn() {
-        return warn;
+    public String getFallbackDescription() {
+        return fallbackDescription;
     }
 
 }

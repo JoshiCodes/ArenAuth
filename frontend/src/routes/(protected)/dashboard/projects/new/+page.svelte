@@ -2,7 +2,7 @@
     import Navbar from "$lib/components/Navbar.svelte";
     import DashboardSidebar from "$lib/components/dashboard/DashboardSidebar.svelte";
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
-    import FloatingInput from "$lib/components/ui/FloatingInput.svelte";
+    import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
 

@@ -5,7 +5,7 @@
     import Navbar from "$lib/components/Navbar.svelte";
     import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
     import Button from "$lib/components/ui/Button.svelte";
-    import FloatingInput from "$lib/components/ui/FloatingInput.svelte";
+    import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import Link from "$lib/components/ui/Link.svelte";
     import { PUBLIC_BACKEND_URL } from "$env/static/public";
 

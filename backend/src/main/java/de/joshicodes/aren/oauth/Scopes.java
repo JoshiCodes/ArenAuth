@@ -5,7 +5,7 @@ public enum Scopes {
     /**
      * OpenID Scope
      */
-    OPEN_ID("openid", "OpenID Connect"),
+    OPEN_ID("openid", "See who you are (via OpenID)"),
     /**
      * Username / Avatar
      */

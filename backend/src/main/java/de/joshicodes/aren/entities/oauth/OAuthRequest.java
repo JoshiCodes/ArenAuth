@@ -15,28 +15,28 @@ public class OAuthRequest extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    public UUID id;
 
     @Column(name = "client_id", nullable = false)
-    String clientId;
+    public String clientId;
 
     @Column(name = "redirect_uri", nullable = false)
-    String redirectUri;
+    public String redirectUri;
 
     @Column(name = "scope", nullable = false)
-    String scope;
+    public String scope;
 
     @Column(nullable = true)
-    String state;
+    public String state;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "project_id", nullable = false)
-    Project project;
+    public Project project;
 
     @Column(nullable = false)
-    Instant createdAt;
+    public Instant createdAt;
     @Column(nullable = false)
-    Instant expiresAt;
+    public Instant expiresAt;
 
     @PrePersist
     protected void onCreate() {

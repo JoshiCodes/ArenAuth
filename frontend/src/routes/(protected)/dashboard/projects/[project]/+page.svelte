@@ -6,10 +6,12 @@
     import Link from "$lib/components/ui/Link.svelte";
     import {onMount} from "svelte";
     import {apiCall} from "$lib/api";
-    import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
-    import BarInput from "$lib/components/ui/BarInput.svelte";
+    import BarInput from "$lib/components/ui/forms/BarInput.svelte";
     import Modal from "$lib/components/Modal.svelte";
+    import CheckInput from "$lib/components/ui/forms/CheckInput.svelte";
+    import BarSelect from "$lib/components/ui/forms/BarSelect.svelte";
 
     $: projectId = String($page.params.project);
     $: data = {
@@ -20,6 +22,8 @@
         redirect_uris: ['']
     };
 
+    let availableScopes: [{name: string, description: string}]|[] = [];
+
     $: error = '';
     $: isLoading = true;
 
@@ -28,6 +32,9 @@
     $: resetModalShown = false;
 
     let newRedirectUri = '';
+
+    let builderSelectedUri = '';
+    $: builtOauthUrl = '';
 
     onMount(() => {
         apiCall(`/api/internal/projects/${projectId}`)
@@ -53,6 +60,12 @@
                 }
                 isLoading = false;
             });
+        apiCall("/oauth2/scopes").then(async (res) => {
+            if(res.ok) {
+                const json = await res.json();
+                availableScopes = json || [];
+            }
+        });
     })
 
     function resetToken() {
@@ -124,6 +137,21 @@
         });
     }
 
+    function updateOauthBuilder() {
+        if(!builderSelectedUri) {
+            builtOauthUrl = '';
+            return;
+        }
+        const selectedScopes = availableScopes.filter(scope => {
+            const checkbox = document.getElementById("scope-" + scope.name) as HTMLInputElement;
+            return checkbox && checkbox.checked;
+        }).map(s => s.name);
+
+        const baseUrl = `${PUBLIC_BACKEND_URL}/oauth2/authorize?client_id=${projectId}&redirect_uri=${encodeURIComponent(builderSelectedUri)}&response_type=code`;
+        const scopeParam = selectedScopes.length > 0 ? `&scope=${encodeURIComponent(selectedScopes.join(' '))}` : '';
+        builtOauthUrl = baseUrl + scopeParam;
+    }
+
 </script>
 
 <Navbar />
@@ -180,8 +208,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <span>Redirect URIs</span>
+                        <div class="mt-2 md:mt-6">
+                            <span class="text-2xl font-semibold text-zinc-700 dark:text-zinc-50">Redirect URIs</span>
                             <div>
                                 {#if data.redirect_uris.length > 0}
                                     {#each data.redirect_uris as uri, index}
@@ -210,12 +238,36 @@
                             </div>
                         </div>
 
-
+                        <div class="mt-2 md:mt-6">
+                            <span class="text-2xl font-semibold text-zinc-700 dark:text-zinc-50">URL Builder</span>
+                            <div class="bg-zinc-300/30 dark:bg-zinc-700 rounded-lg mt-2 px-2 py-4">
+                                <span class="text-xl font-semibold text-zinc-700 dark:text-zinc-50">Scopes</span>
+                                <div class="dark:bg-zinc-800 px-2 py-2 grid grid-cols-2 md:grid-cols-3 gap-4 rounded-lg my-2">
+                                    {#if availableScopes.length > 0}
+                                        {#each availableScopes as scope}
+                                            <CheckInput id={"scope-" + scope.name} label={scope.name} onChange="{updateOauthBuilder}" />
+                                        {/each}
+                                    {:else}
+                                        <span>Failed to fetch available scopes.</span>
+                                    {/if}
+                                </div>
+                                <span class="mt-2 md:mt-4 text-xl font-semibold text-zinc-700 dark:text-zinc-50">Select Redirect URI</span>
+                                <BarSelect id="redirect_uri_select" label={null} class="mt-2 w-full" bind:value={builderSelectedUri} onChange={updateOauthBuilder}>
+                                    {#each data.redirect_uris as uri}
+                                        <option value={uri}>{uri}</option>
+                                    {/each}
+                                </BarSelect>
+                                <span class="mt-2 md:mt-4 text-xl font-semibold text-zinc-700 dark:text-zinc-50">Generated OAuth URL</span>
+                                <BarInput id="generated_oauth_url" bind:value={builtOauthUrl} label={null} disabled copyButton />
+                            </div>
+                        </div>
 
                     </div>
 
-                        <div class="col-span-1 flex justify-center">
-                            <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt={"Project Image"} class="w-full rounded-lg object-cover shadow-lg" />
+                        <div class="col-span-1 row-span-1 flex justify-center">
+                            <div class="w-full">
+                                <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt={"Project Image"} class="w-full rounded-lg object-cover shadow-lg" />
+                            </div>
                         </div>
 
                 </div>

@@ -36,10 +36,10 @@
                rounded-lg
                py-2 px-4 mt-2
                disabled:cursor-not-allowed
-        " disabled={disabled} placeholder={placeholder} />
+        " disabled={disabled} required={required} placeholder={placeholder} />
         {#if copyButton}
             <button title="Copy" type="button"
-                    class="absolute right-2 {label ? 'top-[48%]' : 'top-[22%]'} z-1
+                    class="absolute right-2 {label ? 'top-[48%]' : 'top-[20%]'} z-1
                      p-1 md:p-2 rounded-lg
                     {
                     copied ?
@@ -53,7 +53,7 @@
                 disabled={copyButtonDisabled}
             >
                     {#if copied}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                         </svg>
                     {:else}

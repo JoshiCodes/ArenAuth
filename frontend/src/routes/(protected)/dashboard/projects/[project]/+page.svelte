@@ -12,7 +12,13 @@
     import Modal from "$lib/components/Modal.svelte";
 
     $: projectId = String($page.params.project);
-    $: data = { id: '', name: "Unknown", description: "", imageBlob: "" };
+    $: data = {
+        id: '',
+        name: "Unknown",
+        description: "",
+        imageBlob: "",
+        redirect_uris: ['']
+    };
 
     $: error = '';
     $: isLoading = true;
@@ -20,6 +26,8 @@
     $: secret = '';
 
     $: resetModalShown = false;
+
+    let newRedirectUri = '';
 
     onMount(() => {
         apiCall(`/api/internal/projects/${projectId}`)
@@ -36,7 +44,8 @@
                         id: json.id,
                         name: json.name,
                         description: json.description || "",
-                        imageBlob: json.imageBlob || null
+                        imageBlob: json.imageBlob || null,
+                        redirect_uris: json.redirectUris || []
                     };
 
                 } else {
@@ -52,8 +61,65 @@
             if (res.ok) {
                 const json = await res.json();
                 secret = json.newSecret;
+                error = '';
             } else {
-                alert(`Failed to reset Client Secret: ${res.status} ${res.statusText}`);
+                const json = await res.json();
+                if(json && json.error) {
+                    error = "Failed to reset Client Secret: " + json.error;
+                } else {
+                    error = `Failed to reset Client Secret: ${res.status} ${res.statusText}`;
+                }
+            }
+        });
+    }
+
+    function addRedirectUri() {
+        apiCall(`/api/internal/projects/${projectId}/redirectUri`,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    redirectUri: newRedirectUri
+                })
+            }).then(async (res) => {
+            if (res.ok) {
+                const json = await res.json();
+                if(json && json.success) {
+                    data.redirect_uris = [...data.redirect_uris, newRedirectUri]
+                    newRedirectUri = '';
+                    error = '';
+                } else {
+                    alert(`Failed to add Redirect URI: Invalid response from server.`);
+                }
+            } else {
+                const json = await res.json();
+                if(json && json.error) {
+                    error = "Failed to add Redirect URI: " + json.error;
+                }
+            }
+        });
+    }
+
+    function deleteRedirectUri(uri: string) {
+        apiCall(`/api/internal/projects/${projectId}/redirectUri`,
+            {
+                method: 'DELETE',
+                body: JSON.stringify({
+                    redirectUri: uri
+                })
+            }).then(async (res) => {
+            if (res.ok) {
+                const json = await res.json();
+                if(json && json.success) {
+                    data.redirect_uris = data.redirect_uris.filter(r => r !== uri);
+                    error = '';
+                } else {
+                    alert(`Failed to delete Redirect URI: Invalid response from server.`);
+                }
+            } else {
+                const json = await res.json();
+                if(json && json.error) {
+                    error = "Failed to delete Redirect URI: " + json.error;
+                }
             }
         });
     }
@@ -87,32 +153,71 @@
 
             <h1 class="mt-2 text-4xl font-bold text-zinc-700 dark:text-zinc-50">{data.name}</h1>
 
+            {#if error}
+                <p class="mt-4 text-red-600 dark:text-red-400">{error}</p>
+            {/if}
+
             {#if isLoading}
                 <p class="mt-4 text-zinc-600 dark:text-zinc-400">Loading project data...</p>
-            {:else if error}
-                <p class="mt-4 text-red-600 dark:text-red-400">{error}</p>
             {:else}
-                <div class="mt-6 grid md:grid-cols-2 md:grid-rows-3">
-                    <div class="flex flex-col justify-start gap-y-2 md:gap-y-6">
-                        <div class="">
-                            <h2 class="text-2xl font-semibold text-zinc-700 dark:text-zinc-50">Description</h2>
-                            <p class="mt-2 text-zinc-700 dark:text-zinc-300">{data.description || "No description provided."}</p>
-                        </div>
-                        <div class="w-full flex flex-row gap-x-4">
+                <div class="mt-6 grid md:grid-cols-3 md:grid-rows-3 gap-x-4 md:gap-x-12">
+
+                    <div class="col-span-2">
+                        <div class="flex flex-col justify-start gap-y-2 md:gap-y-6">
                             <div class="">
-                                <BarInput disabled id="clientId" label="Client ID" class="w-1/2" placeholder={projectId} copyButton copyValue={projectId} />
+                                <h2 class="text-2xl font-semibold text-zinc-700 dark:text-zinc-50">Description</h2>
+                                <p class="mt-2 text-zinc-700 dark:text-zinc-300">{data.description || "No description provided."}</p>
                             </div>
-                            <div class="">
-                                <BarInput disabled id="clientToken" label="Client Secret" class="w-1/2" value={secret ? secret : ''} placeholder={secret ? "" : "Hidden for security"} copyButton copyButtonDisabled={!secret}></BarInput>
-                                <Button variant="ghost" size="sm" class="mt-2" onClick={() => resetModalShown = true}>
-                                    Reset Secret
-                                </Button>
+                            <div class="w-full flex flex-row gap-x-4">
+                                <div class="">
+                                    <BarInput disabled id="clientId" label="Client ID" class="w-1/2" placeholder={projectId} copyButton copyValue={projectId} />
+                                </div>
+                                <div class="">
+                                    <BarInput disabled id="clientToken" label="Client Secret" class="w-1/2" value={secret ? secret : ''} placeholder={secret ? "" : "Hidden for security"} copyButton copyButtonDisabled={!secret}></BarInput>
+                                    <Button variant="ghost" size="sm" class="mt-2" onClick={() => resetModalShown = true}>
+                                        Reset Secret
+                                    </Button>
+                                </div>
                             </div>
                         </div>
+                        <div>
+                            <span>Redirect URIs</span>
+                            <div>
+                                {#if data.redirect_uris.length > 0}
+                                    {#each data.redirect_uris as uri, index}
+                                        <div class="flex content-center gap-2 w-4/5">
+                                            <div class="flex-1 w-[90%]">
+                                                <BarInput disabled copyButton id="redirect_uri_" + index label={null} value={uri} />
+                                            </div>
+                                            <div class="flex items-end pb-2">
+                                                <button title="Delete" onclick={() => {deleteRedirectUri(uri)}} class="flex-shrink-0 transition-colors duration-200 hover:text-red-500 dark:hover:text-red-700">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {/each}
+                                {:else }
+                                    <span class="my-2 md:my-4 text-zinc-600 dark:text-zinc-200/70">No redirect URIs set.</span>
+                                {/if}
+                                <div class="mt-2 w-1/2">
+                                    <BarInput id="new_redirect_uri" label="Add Redirect URI" bind:value={newRedirectUri} />
+                                    <Button variant="ghost" size="sm" class="mt-3" onClick={addRedirectUri}>
+                                        Add URI
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+
+
+
                     </div>
-                    <div class="col-span-1 flex justify-center">
-                        <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt="Project Image" class="w-1/3 h-auto rounded-lg object-cover shadow-lg" />
-                    </div>
+
+                        <div class="col-span-1 flex justify-center">
+                            <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt="Project Image" class="w-full rounded-lg object-cover shadow-lg" />
+                        </div>
+
                 </div>
             {/if}
 

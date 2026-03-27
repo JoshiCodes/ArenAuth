@@ -28,7 +28,7 @@ public class ProjectsResources {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProject(String id) {
+    public Response getProject(@PathParam("id") String id) {
 
         final User user = UserExtractor.getUser(identity);
         if(user == null) {
@@ -56,7 +56,7 @@ public class ProjectsResources {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteProject(String id) {
+    public Response deleteProject(@PathParam("id") String id) {
 
         final User user = UserExtractor.getUser(identity);
         if(user == null) {
@@ -82,6 +82,102 @@ public class ProjectsResources {
         if(!success) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        return Response.ok(Map.of("success", true)).build();
+
+    }
+
+    @POST
+    @Transactional
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}/redirectUri")
+    public Response postRedirectUri(@PathParam("id") String id, RedirectUriDTO dto) {
+        final User user = UserExtractor.getUser(identity);
+        if(user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        final UUID projectId;
+        try {
+            projectId = UUID.fromString(id);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "Invalid project ID")
+            ).build();
+        }
+
+        final Project project = Project.findById(projectId);
+        if(project == null || project.owner == null || !project.owner.id.equals(user.id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        if(dto.redirectUri == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "Redirect URI cannot be null")
+            ).build();
+        }
+
+        final String uri = dto.redirectUri;
+
+        if (!uri.startsWith("http://") && !uri.startsWith("https://")) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "Redirect URI must be valid")
+            ).build();
+        }
+
+        if(project.redirectUris.contains(uri)) {
+            return Response.status(Response.Status.CONFLICT).entity(
+                    Map.of("error", "Redirect URI already exists")
+            ).build();
+        }
+
+        project.redirectUris.add(uri);
+        project.persist();
+        return Response.ok(Map.of("success", true)).build();
+
+    }
+
+    @DELETE
+    @Transactional
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}/redirectUri")
+    public Response deleteRedirectUri(@PathParam("id") String id, RedirectUriDTO dto) {
+        final User user = UserExtractor.getUser(identity);
+        if(user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        final UUID projectId;
+        try {
+            projectId = UUID.fromString(id);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "Invalid project ID")
+            ).build();
+        }
+
+        final Project project = Project.findById(projectId);
+        if(project == null || project.owner == null || !project.owner.id.equals(user.id)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        if(dto.redirectUri == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "Redirect URI cannot be null")
+            ).build();
+        }
+
+        final String uri = dto.redirectUri;
+
+        if(!project.redirectUris.contains(uri)) {
+            return Response.status(Response.Status.CONFLICT).entity(
+                    Map.of("error", "Redirect URI does not exists")
+            ).build();
+        }
+
+        project.redirectUris.remove(uri);
+        project.persist();
         return Response.ok(Map.of("success", true)).build();
 
     }
@@ -190,5 +286,7 @@ public class ProjectsResources {
         @RestForm("image")
         public @Nullable FileUpload image;
     }
+
+    public static record RedirectUriDTO(String redirectUri) {}
 
 }

@@ -31,14 +31,13 @@ public class OAuthConsentRecord extends PanacheEntityBase {
 
     @PrePersist
     protected void onCreate() {
-        if(createdAt != null) return;
-        createdAt = LocalDateTime.now();
+        if(createdAt == null)
+            createdAt = LocalDateTime.now();
         if (expiresAt == null) {
             expiresAt = LocalDateTime.now().plusDays(14);
         }
     }
 
-    @Transient
     public boolean isValid() {
         return LocalDateTime.now().isBefore(expiresAt);
     }

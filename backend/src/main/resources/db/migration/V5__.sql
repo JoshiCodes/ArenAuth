@@ -1,5 +1,0 @@
-ALTER TABLE projects
-    ADD created_at TIMESTAMP WITHOUT TIME ZONE;
-
-ALTER TABLE projects
-    ALTER COLUMN created_at SET NOT NULL;

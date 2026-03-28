@@ -6,6 +6,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +45,16 @@ public class Project extends PanacheEntityBase {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     public User owner;
+
+    @Column(name = "created_at", nullable = false)
+    public Instant createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 
     @Transient
     public String generateSecret() {

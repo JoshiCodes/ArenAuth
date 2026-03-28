@@ -2,11 +2,12 @@ package de.joshicodes.aren.entities.dto;
 
 import de.joshicodes.aren.entities.Project;
 
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
 public record ProjectDTO(UUID id, String name, String description, String imageBlob, UUID ownerId,
-                         Set<String> redirectUris) {
+                         Set<String> redirectUris, Instant createdAt) {
 
     public static ProjectDTO from(Project project) {
         return new ProjectDTO(
@@ -15,7 +16,8 @@ public record ProjectDTO(UUID id, String name, String description, String imageB
                 project.description,
                 project.imageBlob,
                 project.owner != null ? project.owner.id : null,
-                project.redirectUris != null ? Set.copyOf(project.redirectUris) : Set.of()
+                project.redirectUris != null ? Set.copyOf(project.redirectUris) : Set.of(),
+                project.createdAt
         );
     }
 

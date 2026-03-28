@@ -127,7 +127,7 @@
             <Button variant="ghost" class="w-1/3" onClick={() => continueAuth(false)}>
                 Cancel
             </Button>
-            <Button class="w-1/3"  onClick={() => continueAuth(false)}>
+            <Button class="w-1/3"  onClick={() => continueAuth(true)}>
                 Authorize
             </Button>
         </div>

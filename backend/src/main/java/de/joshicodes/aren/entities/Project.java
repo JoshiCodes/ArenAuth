@@ -56,13 +56,16 @@ public class Project extends PanacheEntityBase {
         }
     }
 
-    @Transient
     public String generateSecret() {
         byte[] randomBytes = new byte[32];
         new SecureRandom().nextBytes(randomBytes);
         final String secret = UUID.randomUUID().toString().split("-")[0] + "_" + Base64.getUrlEncoder().encodeToString(randomBytes);
         this.clientSecret = BcryptUtil.bcryptHash(secret);
         return secret;
+    }
+
+    public boolean verifySecret(String clientSecret) {
+        return BcryptUtil.matches(clientSecret, this.clientSecret);
     }
 
 }

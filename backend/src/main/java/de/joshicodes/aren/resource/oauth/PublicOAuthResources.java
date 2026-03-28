@@ -2,19 +2,25 @@ package de.joshicodes.aren.resource.oauth;
 
 import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.dto.OAuthRequestDTO;
+import de.joshicodes.aren.entities.oauth.OAuthAuthorizationCode;
 import de.joshicodes.aren.entities.oauth.OAuthRequest;
+import de.joshicodes.aren.entities.oauth.OAuthToken;
+import de.joshicodes.aren.entities.oauth.OAuthTokenService;
 import de.joshicodes.aren.oauth.Scopes;
 import io.quarkus.security.Authenticated;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.reactive.RestHeader;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,6 +30,9 @@ public class PublicOAuthResources {
 
     @ConfigProperty(name = "aren.frontend.url")
     String frontendUrl;
+
+    @Inject
+    OAuthTokenService tokenService;
 
     @GET
     @Path("/scopes")
@@ -53,13 +62,12 @@ public class PublicOAuthResources {
 
         OAuthRequest req = OAuthRequest.findById(reqId);
 
-        if(!req.isValid()) {
-            req.delete();
+        if(req == null || !req.isValid()) {
+            if(req != null) req.delete();
             return Response.status(404).build();
         }
 
         final OAuthRequestDTO dto = OAuthRequestDTO.from(req);
-        req.delete();
 
         return Response.ok(dto).build();
 
@@ -130,6 +138,114 @@ public class PublicOAuthResources {
             e.printStackTrace();
             return Response.status(500).build();
         }
+    }
+
+    @POST
+    @Path("/token")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getToken(
+            @FormParam("grant_type") String grantType,
+            @FormParam("code") String code,
+            @FormParam("redirect_uri") String redirectUri,
+            @FormParam("refresh_token") String refreshToken,
+            @RestHeader(HttpHeaders.AUTHORIZATION) String authHeader
+    ) {
+
+
+        System.out.println("Grant Type: " + grantType);
+        System.out.println("Code: " + code);
+        System.out.println("Refresh Token: " + refreshToken);
+        System.out.println("Redirect URI: " + redirectUri);
+        System.out.println("Auth Header: " + authHeader);
+
+        if(authHeader == null || !authHeader.startsWith("Basic ")) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "missing_or_invalid_auth_header")).build();
+        }
+
+        final String[] credentials = new String(Base64.getDecoder().decode(authHeader.substring(6))).split(":", 2);
+        final String clientId = credentials[0];
+        final String clientSecret = credentials[1];
+
+        System.out.println("Client ID: " + clientId);
+        System.out.println("Client Secret: " + clientSecret);
+
+        if(clientId == null || clientId.isEmpty() || clientSecret == null || clientSecret.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "missing_client_credentials")).build();
+        }
+
+        final UUID projectId;
+        try {
+            projectId = UUID.fromString(clientId);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_client_id")).build();
+        }
+
+        final Project project = Project.findById(projectId);
+        System.out.println("Project: " + project);
+
+        if(project == null || !project.verifySecret(clientSecret)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_client_secret")).build();
+        }
+
+        if(grantType == null || grantType.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_grant_type")).build();
+        }
+
+        if(grantType.equals("authorization_code")) {
+            /*
+             * Auth Code needs:
+             * - code
+             * - redirect_uri
+             * - client_secret OR code_verifier (PKCS)
+             */
+            return handleAuthCodeGrant(code, redirectUri);
+        } else if(grantType.equals("refresh_token")) {
+            /**
+             * Refresh Token needs:
+             * - grant_type : refresh_token
+             * - refresh_token
+             */
+            return handeRefreshGrant(refreshToken, project);
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "unsupported_grant_type")).build();
+        }
+
+    }
+
+    private Response handeRefreshGrant(String refreshToken, Project project) {
+        return Response.status(418).entity("I'm a Teapot.").build();
+    }
+
+    @Transactional
+    public Response handleAuthCodeGrant(final String code, final String redirectUri) {
+
+        System.out.println("Code:" + code);
+        if(code == null || code.isEmpty()) {
+            System.out.println("Code is null or empty");
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_code")).build();
+        }
+
+        final OAuthAuthorizationCode authCode = OAuthAuthorizationCode.find("code", code).firstResult();
+        System.out.println("Auth Code: " + authCode);
+
+        if(authCode == null || !authCode.isValid() || !authCode.redirectUri.equals(redirectUri)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_code")).build();
+        }
+
+        System.out.println("Creating token for auth code: " + authCode.id);
+
+        final OAuthToken token = tokenService.create(authCode);
+        authCode.delete();
+
+        return Response.ok(Map.of(
+                "access_token", token.accessToken,
+                "refresh_token", token.refreshToken,
+                "token_type", "bearer",
+                "expires_in", token.accessTokenExpiresAt.getEpochSecond() - System.currentTimeMillis() / 1000,
+                "scope", token.scope
+        )).build();
+
     }
 
 }

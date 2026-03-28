@@ -248,6 +248,7 @@ public class ProjectsResources {
     @POST
     @Path("/{id}/rotateSecret")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response rotateSecret(String id) {
         final User user = UserExtractor.getUser(identity);
         if(user == null) {
@@ -269,6 +270,7 @@ public class ProjectsResources {
         }
 
         final String secret = project.generateSecret();
+        project.persist();
 
         return Response.ok(
                 Map.of("id", projectId.toString(),

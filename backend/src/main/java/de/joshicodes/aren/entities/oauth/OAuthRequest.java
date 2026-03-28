@@ -9,6 +9,12 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
+/**
+ * Used to store a requested oauth flow
+ * Generated when /authorize is called and redirect to frontend
+ * Frontend gets client with this object.
+ * Get removed once frontend accepts.
+ */
 @Entity
 @Table(name = "oauth_requests")
 public class OAuthRequest extends PanacheEntityBase {

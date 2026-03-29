@@ -152,13 +152,6 @@ public class PublicOAuthResources {
             @RestHeader(HttpHeaders.AUTHORIZATION) String authHeader
     ) {
 
-
-        System.out.println("Grant Type: " + grantType);
-        System.out.println("Code: " + code);
-        System.out.println("Refresh Token: " + refreshToken);
-        System.out.println("Redirect URI: " + redirectUri);
-        System.out.println("Auth Header: " + authHeader);
-
         if(authHeader == null || !authHeader.startsWith("Basic ")) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "missing_or_invalid_auth_header")).build();
         }
@@ -166,9 +159,6 @@ public class PublicOAuthResources {
         final String[] credentials = new String(Base64.getDecoder().decode(authHeader.substring(6))).split(":", 2);
         final String clientId = credentials[0];
         final String clientSecret = credentials[1];
-
-        System.out.println("Client ID: " + clientId);
-        System.out.println("Client Secret: " + clientSecret);
 
         if(clientId == null || clientId.isEmpty() || clientSecret == null || clientSecret.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "missing_client_credentials")).build();
@@ -182,7 +172,6 @@ public class PublicOAuthResources {
         }
 
         final Project project = Project.findById(projectId);
-        System.out.println("Project: " + project);
 
         if(project == null || !project.verifySecret(clientSecret)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_client_secret")).build();
@@ -213,27 +202,42 @@ public class PublicOAuthResources {
 
     }
 
-    private Response handeRefreshGrant(String refreshToken, Project project) {
-        return Response.status(418).entity("I'm a Teapot.").build();
+    @Transactional
+    public Response handeRefreshGrant(String refreshToken, Project project) {
+        if(refreshToken == null || refreshToken.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "missing_refresh_token")).build();
+        }
+
+        final OAuthToken token = OAuthToken.find("refreshToken", refreshToken).firstResult();
+
+        if(token == null || !token.isRefreshTokenValid() || !token.project.id.equals(project.id)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_refresh_token")).build();
+        }
+
+        final OAuthToken newToken = tokenService.create(token);
+        token.delete();
+
+        return Response.ok(Map.of(
+                "access_token", newToken.accessToken,
+                "refresh_token", newToken.refreshToken,
+                "token_type", "bearer",
+                "expires_in", newToken.accessTokenExpiresAt.getEpochSecond() - System.currentTimeMillis() / 1000,
+                "scope", newToken.scope
+        )).build();
     }
 
     @Transactional
     public Response handleAuthCodeGrant(final String code, final String redirectUri) {
 
-        System.out.println("Code:" + code);
         if(code == null || code.isEmpty()) {
-            System.out.println("Code is null or empty");
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_code")).build();
         }
 
         final OAuthAuthorizationCode authCode = OAuthAuthorizationCode.find("code", code).firstResult();
-        System.out.println("Auth Code: " + authCode);
 
         if(authCode == null || !authCode.isValid() || !authCode.redirectUri.equals(redirectUri)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_code")).build();
         }
-
-        System.out.println("Creating token for auth code: " + authCode.id);
 
         final OAuthToken token = tokenService.create(authCode);
         authCode.delete();

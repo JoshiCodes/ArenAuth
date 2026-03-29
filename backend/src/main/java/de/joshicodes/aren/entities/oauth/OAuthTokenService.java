@@ -31,4 +31,19 @@ public class OAuthTokenService {
         return token;
     }
 
+    @Transactional
+    public OAuthToken create(final OAuthToken oldToken) {
+        OAuthToken token = new OAuthToken();
+        token.project = oldToken.project;
+        token.user = oldToken.user;
+        token.createdAt = Instant.now();
+        token.scope = oldToken.scope;
+        token.accessTokenExpiresAt = Instant.now().plusSeconds(TimeUnit.HOURS.toSeconds(1)); // 1 hour
+        token.refreshTokenExpiresAt = Instant.now().plusSeconds(TimeUnit.DAYS.toSeconds(30)); // 30 days
+        token.accessToken = oAuthUtil.generateAccessToken(token);
+        token.refreshToken = UUID.randomUUID().toString();
+        token.persist();
+        return token;
+    }
+
 }

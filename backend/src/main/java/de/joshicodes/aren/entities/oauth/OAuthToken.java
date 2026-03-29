@@ -52,11 +52,11 @@ public class OAuthToken extends PanacheEntityBase {
     }
 
     public boolean isAccessTokenValid() {
-        return !revoked && accessTokenExpiresAt.isBefore(Instant.now());
+        return !revoked && !accessTokenExpiresAt.isBefore(Instant.now());
     }
 
     public boolean isRefreshTokenValid() {
-        return !revoked && refreshTokenExpiresAt.isBefore(Instant.now());
+        return !revoked && !refreshTokenExpiresAt.isBefore(Instant.now());
     }
 
 }

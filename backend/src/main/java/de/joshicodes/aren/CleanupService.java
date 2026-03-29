@@ -45,7 +45,7 @@ public class CleanupService {
 
     private void cleanUpTokens() {
         try {
-            final long count = OAuthToken.delete("accessTokenExpiresAt < ?1 AND refreshTokenExpiresAt < ?1", Instant.now());
+            final long count = OAuthToken.delete("(accessTokenExpiresAt < ?1 AND refreshTokenExpiresAt < ?1) OR revoked IS TRUE", Instant.now());
             LOG.info(String.format("Deleted %d expired auth tokens", count));
         } catch (Exception e) {
             LOG.severe("Cleanup failed: " + e.getMessage());

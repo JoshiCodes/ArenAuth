@@ -3,7 +3,10 @@ package de.joshicodes.aren.resource.oauth;
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.entities.oauth.OAuthAuthorizationCode;
 import de.joshicodes.aren.entities.oauth.OAuthRequest;
+import de.joshicodes.aren.entities.oauth.OAuthToken;
 import de.joshicodes.aren.security.UserExtractor;
+import de.joshicodes.aren.security.oauth.OAuthAuthenticated;
+import de.joshicodes.aren.security.oauth.OAuthSecurityContext;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
@@ -24,6 +27,8 @@ public class OAuthResources {
 
     @Inject
     SecurityIdentity securityIdentity;
+    @Inject
+    OAuthSecurityContext oauthContext;
 
     @POST
     @Transactional
@@ -78,6 +83,30 @@ public class OAuthResources {
         return Response.ok().entity(Map.of(
                 "redirectUri", finalUri
         )).build();
+
+    }
+
+    @POST
+    @Path("/token/revoke")
+    @OAuthAuthenticated
+    public Response revokeToken(String token) {
+        if(token == null || token.isBlank()) {
+            return Response.status(400).entity(Map.of("error", "invalid_token")).build();
+        }
+
+        OAuthToken foundToken = OAuthToken.find("accessToken = ?1 OR refreshToken =?", token).firstResult();
+
+        if(oauthContext == null) {
+            return Response.serverError().entity(Map.of("error", "invalid_auth")).build();
+        }
+
+        if(foundToken == null || foundToken.project.id.equals(oauthContext.getCurrentToken().project.id)) {
+            return Response.status(404).entity(Map.of("error", "invalid_token")).build();
+        }
+
+        foundToken.delete();
+
+        return Response.ok().build();
 
     }
 

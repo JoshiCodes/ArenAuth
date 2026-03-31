@@ -27,6 +27,10 @@ public class UserResource {
         final HashMap<String, Object> response = new HashMap<>();
 
         final User user = securityContext.getCurrentUser();
+
+        response.put("sub", user.id.toString());
+        response.put("name", user.username);
+
         response.put("user", UserDTO.from(user));
         if(securityContext.hasScope(Scopes.EMAIL.getId())) {
             response.put("email", user.email);

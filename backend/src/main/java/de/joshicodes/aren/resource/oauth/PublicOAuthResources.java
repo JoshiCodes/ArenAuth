@@ -7,7 +7,9 @@ import de.joshicodes.aren.entities.oauth.OAuthRequest;
 import de.joshicodes.aren.entities.oauth.OAuthToken;
 import de.joshicodes.aren.entities.oauth.OAuthTokenService;
 import de.joshicodes.aren.oauth.Scopes;
+import de.joshicodes.aren.oauth.openid.OpenIdManager;
 import io.quarkus.security.Authenticated;
+import io.smallrye.jwt.build.Jwt;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -19,10 +21,10 @@ import org.jboss.resteasy.reactive.RestHeader;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Map;
-import java.util.UUID;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Path("/oauth2")
@@ -33,6 +35,9 @@ public class PublicOAuthResources {
 
     @Inject
     OAuthTokenService tokenService;
+
+    @Inject
+    OpenIdManager openIdManager;
 
     @GET
     @Path("/scopes")
@@ -84,7 +89,14 @@ public class PublicOAuthResources {
     @GET
     @Transactional
     @Path("/authorize")
-    public Response authorize(@QueryParam("client_id") String clientId, @QueryParam("redirect_uri") String redirectUri, @QueryParam("response_type") String responseType, @QueryParam("scope") String scope, @QueryParam("state") String state) {
+    public Response authorize(
+            @QueryParam("client_id") String clientId,
+            @QueryParam("redirect_uri") String redirectUri,
+            @QueryParam("response_type") String responseType,
+            @QueryParam("scope") String scope,
+            @QueryParam("state") String state,
+            @QueryParam("nonce") String nonce
+    ) {
 
         if(clientId == null || clientId.isEmpty() || redirectUri == null || redirectUri.isEmpty() || responseType == null || responseType.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of(
@@ -127,6 +139,7 @@ public class PublicOAuthResources {
         request.project = project;
 
         request.state = state;
+        request.nonce = nonce;
 
         request.persist();
 
@@ -239,16 +252,30 @@ public class PublicOAuthResources {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_code")).build();
         }
 
+        final String nonce = authCode.nonce;
+
         final OAuthToken token = tokenService.create(authCode);
         authCode.delete();
 
-        return Response.ok(Map.of(
+        HashMap<String, Object> map = new HashMap<>(Map.of(
                 "access_token", token.accessToken,
                 "refresh_token", token.refreshToken,
                 "token_type", "bearer",
                 "expires_in", token.accessTokenExpiresAt.getEpochSecond() - System.currentTimeMillis() / 1000,
                 "scope", token.scope
-        )).build();
+        ));
+
+        if(token.hasScope(Scopes.OPEN_ID)) {
+            final String openIdToken;
+            try {
+                openIdToken = openIdManager.buildOpenIdToken(token, nonce);
+                map.put("id_token", openIdToken);
+            } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                Logger.getLogger("PublicOAuthResources").severe("Failed to build OpenID token: " + e.getMessage());
+            }
+        }
+
+        return Response.ok(map).build();
 
     }
 

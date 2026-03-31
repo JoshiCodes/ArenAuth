@@ -26,6 +26,7 @@ public class OpenIdManager {
     public String buildOpenIdToken(final OAuthToken token, final String nonce) throws NoSuchAlgorithmException, InvalidKeySpecException {
         final User user = token.user;
         JwtClaimsBuilder builder = Jwt.issuer(issuer)
+                .subject(user.id.toString())
                 .claim("email", user.email)
                 .claim("name", user.username)
                 .issuedAt(token.createdAt)

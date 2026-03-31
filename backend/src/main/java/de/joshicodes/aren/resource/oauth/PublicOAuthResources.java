@@ -21,6 +21,8 @@ import org.jboss.resteasy.reactive.RestHeader;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
@@ -170,8 +172,8 @@ public class PublicOAuthResources {
         }
 
         final String[] credentials = new String(Base64.getDecoder().decode(authHeader.substring(6))).split(":", 2);
-        final String clientId = credentials[0];
-        final String clientSecret = credentials[1];
+        final String clientId = URLDecoder.decode(credentials[0], StandardCharsets.UTF_8);
+        final String clientSecret = URLDecoder.decode(credentials[1], StandardCharsets.UTF_8);
 
         if(clientId == null || clientId.isEmpty() || clientSecret == null || clientSecret.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "missing_client_credentials")).build();
@@ -186,6 +188,7 @@ public class PublicOAuthResources {
 
         final Project project = Project.findById(projectId);
 
+        System.out.println(clientSecret);
         if(project == null || !project.verifySecret(clientSecret)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_client_secret")).build();
         }

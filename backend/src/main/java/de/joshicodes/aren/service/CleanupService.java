@@ -1,15 +1,13 @@
-package de.joshicodes.aren;
+package de.joshicodes.aren.service;
 
 import de.joshicodes.aren.entities.oauth.OAuthAuthorizationCode;
 import de.joshicodes.aren.entities.oauth.OAuthRequest;
 import de.joshicodes.aren.entities.oauth.OAuthToken;
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 @ApplicationScoped

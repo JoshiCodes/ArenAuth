@@ -59,7 +59,8 @@ public class OAuthResources {
                 user,
                 req.scope,
                 req.redirectUri,
-                req.state
+                req.state,
+                req.nonce
         );
 
         final String state = req.state;

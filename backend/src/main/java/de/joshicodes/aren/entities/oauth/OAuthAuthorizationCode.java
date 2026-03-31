@@ -3,6 +3,7 @@ package de.joshicodes.aren.entities.oauth;
 import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -36,13 +37,15 @@ public class OAuthAuthorizationCode extends PanacheEntityBase {
     public String redirectUri;
     @Column(nullable = true)
     public String state;
+    @Column(nullable = true)
+    public String nonce;
 
     @Column(nullable = false, name = "created_at")
     public Instant createdAt;
     @Column(nullable = false, name = "expires_at")
     public Instant expiresAt;
 
-    public static OAuthAuthorizationCode create(final Project project, final User user, final String scope, final String redirectUri, final String state) {
+    public static OAuthAuthorizationCode create(final Project project, final User user, final String scope, final String redirectUri, final String state, @Nullable final String nonce) {
         final OAuthAuthorizationCode code = new OAuthAuthorizationCode();
         code.project = project;
         code.user = user;
@@ -52,6 +55,7 @@ public class OAuthAuthorizationCode extends PanacheEntityBase {
         code.state = state;
         code.createdAt = Instant.now();
         code.expiresAt = code.createdAt.plusSeconds(300); // expires in 5 minutes
+        code.nonce = nonce;
         code.persist();
         return code;
     }

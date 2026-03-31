@@ -2,6 +2,7 @@ package de.joshicodes.aren.entities.oauth;
 
 import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
+import de.joshicodes.aren.oauth.Scopes;
 import de.joshicodes.aren.util.OAuthUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
@@ -49,6 +50,14 @@ public class OAuthToken extends PanacheEntityBase {
 
     public Set<String> getScopes() {
         return Set.of(scope.split(" "));
+    }
+
+    public boolean hasScope(final Scopes scope) {
+        return hasScope(scope.getId());
+    }
+
+    public boolean hasScope(final String scope) {
+        return getScopes().contains(scope);
     }
 
     public boolean isAccessTokenValid() {

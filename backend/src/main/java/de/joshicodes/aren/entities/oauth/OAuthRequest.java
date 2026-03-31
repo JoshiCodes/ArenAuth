@@ -34,6 +34,8 @@ public class OAuthRequest extends PanacheEntityBase {
 
     @Column(nullable = true)
     public String state;
+    @Column(nullable = true)
+    public String nonce;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "project_id", nullable = false)

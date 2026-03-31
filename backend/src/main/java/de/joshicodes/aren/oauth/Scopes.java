@@ -13,12 +13,12 @@ public enum Scopes {
     /**
      * View all Applications the user has access to
      */
-    APPLICATIONS_READ("applications.read", "View your applications"),
-    EMAIL("email", "View your email address"),;
+    APPLICATIONS_READ("applications.read", "View your projects"),
+    EMAIL("email", "View your email address"),
+
+    CONFIG_EDIT("config.edit", "Edit your configuration for this project");
 
     // TODO:
-    //  - Config Scope to read/write application-config
-    //  - Global config scope to access all user configs
     //  - Connections (Google, Github, etc.),
     //    as soon as other providers are configured
     //  - Teams

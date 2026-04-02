@@ -128,7 +128,6 @@ public class PublicOAuthResources {
             )).build();
         }
 
-        System.out.println(redirectUri);
         if(!project.redirectUris.contains(redirectUri)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of(
                     "error", "invalid_redirect_uri"

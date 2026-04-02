@@ -18,9 +18,12 @@
         id: '',
         name: "Unknown",
         description: "",
-        imageBlob: "",
+        avatarId: "",
         redirect_uris: ['']
     };
+
+    $: iconUrl = data.avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + data.avatarId : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
+
 
     let availableScopes: [{name: string, description: string}]|[] = [];
 
@@ -51,7 +54,7 @@
                         id: json.id,
                         name: json.name,
                         description: json.description || "",
-                        imageBlob: json.imageBlob || null,
+                        avatarId: json.avatarId || null,
                         redirect_uris: json.redirectUris || []
                     };
 
@@ -266,7 +269,7 @@
 
                         <div class="col-span-1 row-span-1 flex justify-center">
                             <div class="w-full">
-                                <img src={data.imageBlob || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", data.name)} alt={"Project Image"} class="w-full rounded-lg object-cover shadow-lg" />
+                                <img src={iconUrl} alt={"Project Image"} class="w-full rounded-lg object-cover shadow-lg" />
                             </div>
                         </div>
 

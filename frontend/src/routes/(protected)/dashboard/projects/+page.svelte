@@ -10,7 +10,7 @@
     import {PUBLIC_BACKEND_URL} from "$env/static/public";
 
     let loading = true;
-    let projects: { name: string, id: string }[] = [];
+    let projects: { name: string, id: string, avatarId: string }[] = [];
 
     onMount(() => {
 
@@ -55,7 +55,7 @@
             {:else}
                 {#if projects.length > 0}
                     {#each projects as project}
-                        <ProjectCard name={project.name} id={project.id} />
+                        <ProjectCard project={project} />
                     {/each}
                 {:else}
                     <div class="text-center col-span-full row-span-full mt-4 md:mt-16 w-full h-full flex justify-center content-center items-center">

@@ -9,6 +9,8 @@
     let name: string = "";
     let description: string = "";
     let image: Blob|null = null; // TODO
+    let imagePreview: string|null = null;
+    let fileInput: HTMLInputElement;
 
     $: canSubmit = name.length >= 3;
 
@@ -40,6 +42,43 @@
         });
     }
 
+    function handleFileSelect(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        const files = target.files;
+
+        if(!files || files.length === 0) return;
+        const file = files[0];
+
+        if(!file.type.startsWith("image/")) {
+            error = "Please select a valid image file. (PNP,JPG, WebP)";
+            return;
+        }
+
+        if(file.size > 5 * 1024 * 1024) { // 5MB limit
+            error = "Image size must be less than 5MB.";
+            return;
+        }
+
+        image = file;
+        error = null;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+
+    }
+
+    function triggerFileInput(): void {
+        fileInput.click();
+    }
+
+    function clearImage(): void {
+        image = null;
+        fileInput.value = "";
+    }
+
 </script>
 
 <Navbar />
@@ -57,12 +96,31 @@
             <FloatingInput id="name" label="Project name" required bind:value={name} class="col-span-1 row-span-1" />
             <div class="col-span-1 row-span-2 flex flex-col gap-y-4 justify-center content-center items-center">
                 <!-- TODO -->
-                <img src={PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", (name || "New Project"))}
+                <img src={imagePreview || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", (name || "New Project"))}
                      alt="Project icon"
                      class="mt-2 md:mt-4 w-1/3 object-cover rounded-lg" />
-                <Button variant="secondary" disabled>
-                    Upload Image
-                </Button>
+                <input
+                    type="file"
+                    bind:this={fileInput}
+                    accept="image/*"
+                    on:change={handleFileSelect}
+                    class="hidden"
+                />
+                <div class="flex gap-2">
+                    <Button variant="secondary" onClick={triggerFileInput}>
+                        Upload Image
+                    </Button>
+                    {#if image}
+                        <Button variant="secondary" onClick={clearImage}>
+                            Clear
+                        </Button>
+                    {/if}
+                </div>
+                {#if image}
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Selected: {image.name}
+                    </p>
+                {/if}
             </div>
             <FloatingInput id="description" label="Project Description" type="text" required bind:value={description} class="col-span-1 row-span-1" />
         </div>

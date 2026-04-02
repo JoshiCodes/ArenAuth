@@ -118,7 +118,7 @@ public class UploadService {
 
             bytes = resizeImage(bytes, 512, mimeType);
             Files.write(resizedFile.toPath(), bytes);
-            LOG.info("File uploaded successfully: " + resizedFile.getName() + " (" + totalSize + " bytes)");
+            LOG.info("File uploaded successfully: {} ({} bytes)", resizedFile.getName(), totalSize);
         }
 
         return totalSize;

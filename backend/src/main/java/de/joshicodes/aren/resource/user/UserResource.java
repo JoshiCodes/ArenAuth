@@ -30,6 +30,7 @@ public class UserResource {
 
         response.put("sub", user.id.toString());
         response.put("name", user.username);
+        response.put("preferred_username", user.username);
 
         response.put("user", UserDTO.from(user));
         if(securityContext.hasScope(Scopes.EMAIL.getId())) {

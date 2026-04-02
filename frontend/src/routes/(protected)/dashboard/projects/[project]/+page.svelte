@@ -12,6 +12,9 @@
     import Modal from "$lib/components/Modal.svelte";
     import CheckInput from "$lib/components/ui/forms/CheckInput.svelte";
     import BarSelect from "$lib/components/ui/forms/BarSelect.svelte";
+    import {PencilIcon} from "lucide-svelte";
+
+    let fileInput: HTMLInputElement;
 
     $: projectId = String($page.params.project);
     $: data = {
@@ -22,8 +25,7 @@
         redirect_uris: ['']
     };
 
-    $: iconUrl = data.avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + data.avatarId : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
-
+    $: iconUrl = data.avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + data.avatarId + "?size=1024" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
 
     let availableScopes: [{name: string, description: string}]|[] = [];
 
@@ -155,6 +157,57 @@
         builtOauthUrl = baseUrl + scopeParam;
     }
 
+    function handleFileSelect(event: Event) {
+
+        const target = event.target as HTMLInputElement;
+        const files = target.files;
+
+        if(!files || files.length === 0) return;
+        const file = files[0];
+
+        if(!file.type.startsWith("image/")) {
+            error = "Please select a valid image file. (PNP,JPG, WebP)";
+            return;
+        }
+
+        if(file.size > 5 * 1024 * 1024) { // 5MB limit
+            error = "Image size must be less than 5MB.";
+            return;
+        }
+
+        const fd = new FormData();
+        fd.append("file", file);
+        apiCall("/api/avatar/upload/project/" + projectId, {
+            method: 'POST',
+            body: fd
+        })
+            .then(async (res) => {
+                console.log(res)
+                if(res.ok) {
+                    const json = await res.json();
+                    if(json && json.avatarId) {
+                        data.avatarId = json.avatarId;
+                        error = '';
+                    } else {
+                        error = "Failed to upload image: Invalid response from server.";
+                    }
+                } else {
+                    const json = await res.json();
+                    if(json && json.error) {
+                        error = "Failed to upload image: " + json.error;
+                    } else {
+                        error = `Failed to upload image: ${res.status} ${res.statusText}`;
+                    }
+                }
+            });
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            iconUrl = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    }
+
 </script>
 
 <Navbar />
@@ -269,7 +322,23 @@
 
                         <div class="col-span-1 row-span-1 flex justify-center">
                             <div class="w-full">
-                                <img src={iconUrl} alt={"Project Image"} class="w-full rounded-lg object-cover shadow-lg" />
+                                <div class="relative inline-block w-2/3 group">
+                                    <img src={iconUrl} alt={"Project Image"} class="w-full rounded-lg object-cover shadow-lg group-hover:opacity-50 transition-opacity duration-200" />
+                                    <button onclick={() => {fileInput?.click()}} class="absolute inset-0 rounded-lg flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <span
+                                                class="p-3 bg-white dark:bg-zinc-600 hover:bg-gray-100 dark:hover:bg-zinc-500 text-gray-700 dark:text-gray-200 rounded-full shadow-lg  transition-colors duration-200"
+                                        >
+                                            <PencilIcon size={24} class="" />
+                                        </span>
+                                    </button>
+                                </div>
+                                <input
+                                        type="file"
+                                        bind:this={fileInput}
+                                        accept="image/*"
+                                        onchange={handleFileSelect}
+                                        class="hidden"
+                                />
                             </div>
                         </div>
 

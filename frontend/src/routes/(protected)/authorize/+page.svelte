@@ -12,7 +12,7 @@
 
     let projectName: string;
     let avatarId: string|null = null;
-    $: projectImg = avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + avatarId + "?size=64" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
+    $: projectImg = avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + avatarId + "?size=128" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
     let scopes: string[];
     let redirectUri: string;
     let projectCreated: string;
@@ -84,7 +84,7 @@
     <div class="px-2 py-4 mx-2 dark:bg-zinc-950 rounded-lg">
         <div class="flex flex-col justify-center content-center items-center px-4">
             <div class="mt-2">
-                <img src={projectImg} alt={"Project Logo"} class="w-full rounded-lg object-cover shadow-lg" />
+                <img src={projectImg} alt={"Project Logo"} class="w-[128px] rounded-xl object-cover shadow-lg" />
             </div>
             <span class="text-xl font-bold mt-2">{projectName}</span>
             <span class="mb-2">wants to access your <b>Aren</b> account.</span>

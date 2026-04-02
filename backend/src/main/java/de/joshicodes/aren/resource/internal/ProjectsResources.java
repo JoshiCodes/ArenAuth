@@ -4,6 +4,7 @@ import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.entities.dto.ProjectDTO;
 import de.joshicodes.aren.security.UserExtractor;
+import de.joshicodes.aren.service.UploadService;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.Nullable;
@@ -15,6 +16,9 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,6 +29,9 @@ public class ProjectsResources {
 
     @Inject
     SecurityIdentity identity;
+
+    @Inject
+    UploadService uploadService;
 
     @GET
     @Path("/{id}")
@@ -239,10 +246,33 @@ public class ProjectsResources {
         Project project = new Project();
         project.name = dto.name;
         project.description = dto.description;
-        project.avatarId = null; // TODO
+        project.avatarId = null;
         project.owner = user;
+
+        if(dto.image != null) {
+            FileUpload file = dto.image;
+            try (InputStream inputStream = Files.newInputStream(file.filePath())) {
+                String mimeType = file.contentType();
+                String fileName = uploadService.uploadFile(
+                        UploadService.UploadType.USER_AVATAR,
+                        inputStream,
+                        mimeType,
+                        file.fileName()
+                );
+                if(fileName != null) {
+                    project.avatarId = user.avatarId;
+                    project.avatarMimeType = mimeType;
+                }
+            } catch (IOException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                        Map.of("error", "Failed to upload image")
+                ).build();
+            }
+        }
+
         project.generateSecret();
         project.persist();
+
         return Response.ok(ProjectDTO.from(project)).build();
     }
 

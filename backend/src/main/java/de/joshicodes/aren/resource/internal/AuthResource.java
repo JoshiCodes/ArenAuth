@@ -4,7 +4,6 @@ import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.security.Session;
 import de.joshicodes.aren.security.SessionService;
 import io.quarkus.elytron.security.common.BcryptUtil;
-import io.smallrye.jwt.build.Jwt;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;

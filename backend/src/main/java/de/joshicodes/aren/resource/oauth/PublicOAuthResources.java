@@ -8,8 +8,6 @@ import de.joshicodes.aren.entities.oauth.OAuthToken;
 import de.joshicodes.aren.entities.oauth.OAuthTokenService;
 import de.joshicodes.aren.oauth.Scopes;
 import de.joshicodes.aren.oauth.openid.OpenIdManager;
-import io.quarkus.security.Authenticated;
-import io.smallrye.jwt.build.Jwt;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;

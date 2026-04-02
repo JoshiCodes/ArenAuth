@@ -1,6 +1,5 @@
 package de.joshicodes.aren.entities;
 
-import io.netty.handler.codec.base64.Base64Encoder;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
@@ -28,8 +27,10 @@ public class Project extends PanacheEntityBase {
     @Column
     public String description;
 
-    @Column
-    public String imageBlob;
+    @Column(nullable = true, name = "avatar_id")
+    public String avatarId;
+    @Column(nullable = true, name = "avatar_mime_type")
+    public String avatarMimeType;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(

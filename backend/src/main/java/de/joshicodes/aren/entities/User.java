@@ -33,6 +33,11 @@ public class User extends PanacheEntityBase {
     @Column(unique = true)
     public String email;
 
+    @Column(nullable = true, name = "avatar_id")
+    public String avatarId;
+    @Column(nullable = true, name = "avatar_mime_type")
+    public String avatarMimeType;
+
     @Roles
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"))

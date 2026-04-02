@@ -15,8 +15,9 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Path("/api/internal/projects")
 @Authenticated
@@ -184,7 +185,7 @@ public class ProjectsResources {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSelf() {
+    public Response getProjects() {
 
         final User user = UserExtractor.getUser(identity);
         if(user == null) {
@@ -238,7 +239,7 @@ public class ProjectsResources {
         Project project = new Project();
         project.name = dto.name;
         project.description = dto.description;
-        project.imageBlob = null; // TODO
+        project.avatarId = null; // TODO
         project.owner = user;
         project.generateSecret();
         project.persist();

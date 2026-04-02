@@ -1,29 +1,28 @@
 package de.joshicodes.aren.service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.flywaydb.core.internal.util.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 @ApplicationScoped
 public class UploadService {
 
-    private final Logger LOG = Logger.getLogger("UploadService");
+    private static final Logger LOG = LoggerFactory.getLogger(UploadService.class);
 
     @ConfigProperty(name = "aren.upload-dir")
     public String UPLOAD_DIR_NAME;
     private File UPLOAD_DIR;
 
-    // Erlaubte Dateitypen und maximale Größe
     private final String[] ALLOWED_MIME_TYPES = {
             "image/png", "image/jpeg", "image/jpg", "image/webp"
     };
@@ -31,6 +30,16 @@ public class UploadService {
 
     @ConfigProperty(name = "aren.max-upload-size", defaultValue = "5242880")
     long MAX_UPLOAD_SIZE;
+
+    @PostConstruct
+    void init() {
+        if(UPLOAD_DIR == null) {
+            UPLOAD_DIR = new File(UPLOAD_DIR_NAME);
+            if(!UPLOAD_DIR.exists()) {
+                UPLOAD_DIR.mkdirs();
+            }
+        }
+    }
 
     /**
      * Uploads a file and returns the filename
@@ -44,10 +53,7 @@ public class UploadService {
                              final String mimeType, final String fileName) throws IOException {
 
         if(UPLOAD_DIR == null) {
-            UPLOAD_DIR = new File(UPLOAD_DIR_NAME);
-            if(!UPLOAD_DIR.exists()) {
-                UPLOAD_DIR.mkdirs();
-            }
+            return null;
         }
 
         if (!isAllowedMimeType(mimeType)) {
@@ -92,7 +98,6 @@ public class UploadService {
             while ((read = inputStream.read(buffer)) != -1) {
                 totalSize += read;
 
-                // Prüfe, ob maximale Größe überschritten wurde
                 if (totalSize > MAX_UPLOAD_SIZE) {
                     targetFile.delete();
                     throw new IOException(
@@ -144,16 +149,12 @@ public class UploadService {
     public Pair<byte[], String> getFile(UploadType uploadType, String fileId) throws IOException {
 
         if(UPLOAD_DIR == null) {
-            UPLOAD_DIR = new File(UPLOAD_DIR_NAME);
-            if(!UPLOAD_DIR.exists()) {
-                return null;
-            }
+            return null;
         }
 
         File typeDir = new File(UPLOAD_DIR, uploadType.getDirName());
 
         try {
-            // Finde die Datei mit der fileId (unabhängig von der Endung)
             File[] files = typeDir.listFiles((dir, name) -> name.startsWith(fileId + "."));
 
             if (files == null || files.length == 0) {
@@ -162,7 +163,6 @@ public class UploadService {
 
             File file = files[0];
 
-            // Sicherheitsprüfung - verhindere Path Traversal
             if (!file.getCanonicalPath().startsWith(typeDir.getCanonicalPath())) {
                 return null;
             }
@@ -191,7 +191,6 @@ public class UploadService {
         File typeDir = new File(UPLOAD_DIR, uploadType.getDirName());
 
         try {
-            // Finde die Datei mit der fileId (unabhängig von der Endung)
             File[] files = typeDir.listFiles((dir, name) -> name.startsWith(fileId + "."));
 
             if (files == null || files.length == 0) {
@@ -200,16 +199,16 @@ public class UploadService {
 
             File fileToDelete = files[0];
 
-            // Sicherheitsprüfung - verhindere Path Traversal
             if (!fileToDelete.getCanonicalPath().startsWith(typeDir.getCanonicalPath())) {
                 return false;
             }
 
-            // Lösche die Datei
             boolean deleted = fileToDelete.delete();
 
             if (deleted) {
+                LOG.info("File deleted: " + fileToDelete);
             } else {
+                LOG.warn("Failed to delete file: " + fileToDelete);
             }
 
             return deleted;

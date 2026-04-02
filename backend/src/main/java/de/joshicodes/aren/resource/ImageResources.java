@@ -49,7 +49,7 @@ public class ImageResources {
                     .type(response.getRight())
                     .build();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to get avatar");
         }
     }
 
@@ -71,7 +71,7 @@ public class ImageResources {
                     .type(response.getRight())
                     .build();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to get avatar");
         }
     }
 
@@ -158,7 +158,6 @@ public class ImageResources {
 
             Project project;
             try {
-                System.out.println(projectId);
                 if(projectId == null) {
                     return Response.status(Response.Status.BAD_REQUEST)
                             .entity(Map.of("error", "Invalid project ID."))

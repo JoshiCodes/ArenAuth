@@ -1,5 +1,6 @@
 package de.joshicodes.aren.resource;
 
+import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.security.oauth.OAuthAuthenticated;
 import de.joshicodes.aren.service.UploadService;
@@ -10,6 +11,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.flywaydb.core.internal.util.Pair;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import java.io.File;
@@ -34,13 +36,17 @@ public class ImageResources {
     @Produces({"image/png", "image/jpeg", "image/*"})
     public Response getUserAvatar(@PathParam("id") String id) {
         try {
-            final byte[] bytes = uploadService.getFile(
+            final Pair<byte[], String> response = uploadService.getFile(
                     UploadService.UploadType.USER_AVATAR,
                     id
             );
 
-            return Response.ok(bytes)
-                    .type("image/png")
+            if(response == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            return Response.ok(response.getLeft())
+                    .type(response.getRight())
                     .build();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -51,7 +57,22 @@ public class ImageResources {
     @Path("/project/{id}")
     @Produces({"image/png", "image/jpeg", "image/*"})
     public Response getProjectAvatar(@PathParam("id") String id) {
-        return Response.ok().build();
+        try {
+            final Pair<byte[], String> response = uploadService.getFile(
+                    UploadService.UploadType.PROJECT_AVATAR,
+                    id
+            );
+
+            if(response == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            return Response.ok(response.getLeft())
+                    .type(response.getRight())
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @POST
@@ -64,7 +85,7 @@ public class ImageResources {
         try {
             if (file == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("{\"error\": \"Keine Datei hochgeladen\"}")
+                        .entity(Map.of("error", "No Image provided."))
                         .build();
             }
 
@@ -73,6 +94,12 @@ public class ImageResources {
 
                 UUID userId = identity.getAttribute("userId");
                 final User user = User.findById(userId);
+
+                if(user == null) {
+                    return Response.status(Response.Status.UNAUTHORIZED)
+                            .entity(Map.of("error", "User not found"))
+                            .build();
+                }
 
                 if(user.avatarId != null) {
                     final String prevAvatar = user.avatarId;
@@ -85,29 +112,118 @@ public class ImageResources {
                         mimeType,
                         file.fileName()
                 );
+
+                if(fileName == null) {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(Map.of("error", "Failed to upload file."))
+                            .build();
+                }
+
                 user.avatarId = fileName;
+                user.avatarMimeType = mimeType;
                 user.persist();
 
                 return Response.ok()
-                        .entity(Map.of("avatarId", fileName))
+                        .entity(new ImageResponseDTO(UploadService.UploadType.USER_AVATAR, fileName))
                         .build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
-                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .entity(Map.of("error", e.getMessage()))
                     .build();
         } catch (IOException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"error\": \"Upload fehlgeschlagen\"}")
+                    .entity(Map.of("error", "Upload failed."))
                     .build();
         }
     }
 
     @POST
     @Path("/upload/project/{id}")
+    @Transactional
     @Authenticated
-    public Response uploadUserAvatar(@FormParam("id") String projectId) {
-        return Response.ok().build();
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response uploadProjectAvatar(@PathParam("id") String projectId, @FormParam("file") FileUpload file) {
+        try {
+
+            UUID userId = identity.getAttribute("userId");
+            final User user = User.findById(userId);
+
+            if(user == null) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(Map.of("error", "User not found"))
+                        .build();
+            }
+
+            Project project;
+            try {
+                System.out.println(projectId);
+                if(projectId == null) {
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .entity(Map.of("error", "Invalid project ID."))
+                            .build();
+                }
+                final UUID projectUUID = UUID.fromString(projectId);
+                project = Project.findById(projectUUID);
+            } catch (NumberFormatException e) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error", "Invalid project ID."))
+                        .build();
+            }
+
+            if(project == null || !project.owner.id.equals(userId)) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            if (file == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error", "No Image provided."))
+                        .build();
+            }
+
+            try (InputStream inputStream = Files.newInputStream(file.filePath())) {
+                String mimeType = file.contentType();
+
+                if(project.avatarId != null) {
+                    final String prevAvatar = project.avatarId;
+                    uploadService.deleteFile(UploadService.UploadType.PROJECT_AVATAR, prevAvatar);
+                }
+
+                String fileName = uploadService.uploadFile(
+                        UploadService.UploadType.PROJECT_AVATAR,
+                        inputStream,
+                        mimeType,
+                        file.fileName()
+                );
+
+                if(fileName == null) {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(Map.of("error", "Failed to upload file."))
+                            .build();
+                }
+
+                project.avatarId = fileName;
+                project.avatarMimeType = mimeType;
+                project.persist();
+
+                return Response.ok()
+                        .entity(new ImageResponseDTO(UploadService.UploadType.PROJECT_AVATAR, fileName))
+                        .build();
+            }
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        } catch (IOException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", "Upload failed."))
+                    .build();
+        }
+    }
+
+    public static record ImageResponseDTO(UploadService.UploadType type, String avatarId) {
+
     }
 
 }

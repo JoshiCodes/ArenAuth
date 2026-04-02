@@ -35,6 +35,8 @@ public class User extends PanacheEntityBase {
 
     @Column(nullable = true, name = "avatar_id")
     public String avatarId;
+    @Column(nullable = true, name = "avatar_mime_type")
+    public String avatarMimeType;
 
     @Roles
     @ElementCollection(fetch = FetchType.EAGER)

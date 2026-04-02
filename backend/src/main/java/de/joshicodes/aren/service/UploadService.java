@@ -2,6 +2,7 @@ package de.joshicodes.aren.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.flywaydb.core.internal.util.Pair;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,23 +17,20 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class UploadService {
 
-    private static final Logger LOG = Logger.getLogger("UploadService");
-    private static final File UPLOAD_DIR = new File("uploads");
+    private final Logger LOG = Logger.getLogger("UploadService");
+
+    @ConfigProperty(name = "aren.upload-dir")
+    public String UPLOAD_DIR_NAME;
+    private File UPLOAD_DIR;
 
     // Erlaubte Dateitypen und maximale Größe
-    private static final String[] ALLOWED_MIME_TYPES = {
+    private final String[] ALLOWED_MIME_TYPES = {
             "image/png", "image/jpeg", "image/jpg", "image/webp"
     };
-    private static final long MAX_FILE_SIZE_DEFAULT = 5 * 1024 * 1024; // 5MB
+    private final long MAX_FILE_SIZE_DEFAULT = 5 * 1024 * 1024; // 5MB
 
     @ConfigProperty(name = "aren.max-upload-size", defaultValue = "5242880")
     long MAX_UPLOAD_SIZE;
-
-    static {
-        if (!UPLOAD_DIR.exists()) {
-            UPLOAD_DIR.mkdirs();
-        }
-    }
 
     /**
      * Uploads a file and returns the filename
@@ -44,6 +42,13 @@ public class UploadService {
      */
     public String uploadFile(final UploadType uploadType, final InputStream inputStream,
                              final String mimeType, final String fileName) throws IOException {
+
+        if(UPLOAD_DIR == null) {
+            UPLOAD_DIR = new File(UPLOAD_DIR_NAME);
+            if(!UPLOAD_DIR.exists()) {
+                UPLOAD_DIR.mkdirs();
+            }
+        }
 
         if (!isAllowedMimeType(mimeType)) {
             throw new IllegalArgumentException(
@@ -127,7 +132,24 @@ public class UploadService {
         };
     }
 
-    public byte[] getFile(UploadType uploadType, String fileId) throws IOException {
+    private String toMimeType(String extension) {
+        return switch (extension.toLowerCase()) {
+            case "png" -> "image/png";
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "webp" -> "image/webp";
+            default -> null;
+        };
+    }
+
+    public Pair<byte[], String> getFile(UploadType uploadType, String fileId) throws IOException {
+
+        if(UPLOAD_DIR == null) {
+            UPLOAD_DIR = new File(UPLOAD_DIR_NAME);
+            if(!UPLOAD_DIR.exists()) {
+                return null;
+            }
+        }
+
         File typeDir = new File(UPLOAD_DIR, uploadType.getDirName());
 
         try {
@@ -145,13 +167,27 @@ public class UploadService {
                 return null;
             }
 
-            return Files.readAllBytes(file.toPath());
+            final String ending = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+            final String mimeType = toMimeType(ending);
+            if(mimeType == null) {
+                return null;
+            }
+
+            return Pair.of(
+                    Files.readAllBytes(file.toPath()),
+                    mimeType
+            );
         } catch (IOException e) {
             return null;
         }
     }
 
     public boolean deleteFile(UploadType uploadType, String fileId) {
+
+        if(UPLOAD_DIR == null) {
+            return false;
+        }
+
         File typeDir = new File(UPLOAD_DIR, uploadType.getDirName());
 
         try {

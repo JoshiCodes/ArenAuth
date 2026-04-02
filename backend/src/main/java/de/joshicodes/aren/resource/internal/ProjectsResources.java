@@ -184,7 +184,7 @@ public class ProjectsResources {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSelf() {
+    public Response getProjects() {
 
         final User user = UserExtractor.getUser(identity);
         if(user == null) {
@@ -238,7 +238,7 @@ public class ProjectsResources {
         Project project = new Project();
         project.name = dto.name;
         project.description = dto.description;
-        project.imageBlob = null; // TODO
+        project.avatarId = null; // TODO
         project.owner = user;
         project.generateSecret();
         project.persist();

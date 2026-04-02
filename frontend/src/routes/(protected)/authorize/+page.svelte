@@ -1,6 +1,5 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
-    import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import Link from "$lib/components/ui/Link.svelte";
     import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";

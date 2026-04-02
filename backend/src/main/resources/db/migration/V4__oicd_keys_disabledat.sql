@@ -1,2 +1,0 @@
-ALTER TABLE oidc_keys
-    ADD disabledAt TIMESTAMP WITHOUT TIME ZONE;

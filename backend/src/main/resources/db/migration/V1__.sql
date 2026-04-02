@@ -7,6 +7,7 @@ CREATE TABLE oauth_authorization_codes
     scope       VARCHAR(255)                NOT NULL,
     redirectUri VARCHAR(255)                NOT NULL,
     state       VARCHAR(255),
+    nonce       VARCHAR(255),
     created_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     expires_at  TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT pk_oauth_authorization_codes PRIMARY KEY (id)
@@ -29,6 +30,7 @@ CREATE TABLE oauth_requests
     redirect_uri VARCHAR(255)                NOT NULL,
     scope        VARCHAR(255)                NOT NULL,
     state        VARCHAR(255),
+    nonce        VARCHAR(255),
     project_id   UUID                        NOT NULL,
     createdAt    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     expiresAt    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
@@ -50,6 +52,17 @@ CREATE TABLE oauth_tokens
     CONSTRAINT pk_oauth_tokens PRIMARY KEY (id)
 );
 
+CREATE TABLE oidc_keys
+(
+    kid           VARCHAR(50)                 NOT NULL,
+    publicKeyPem  OID                         NOT NULL,
+    privateKeyPem OID                         NOT NULL,
+    createdAt     TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    active        BOOLEAN                     NOT NULL,
+    disabledAt    TIMESTAMP WITHOUT TIME ZONE,
+    CONSTRAINT pk_oidc_keys PRIMARY KEY (kid)
+);
+
 CREATE TABLE project_redirect_uris
 (
     project_id   UUID         NOT NULL,
@@ -58,22 +71,25 @@ CREATE TABLE project_redirect_uris
 
 CREATE TABLE projects
 (
-    id            UUID                        NOT NULL,
-    name          VARCHAR(255),
-    description   VARCHAR(255),
-    imageBlob     VARCHAR(255),
-    client_secret VARCHAR(255)                NOT NULL,
-    owner_id      UUID                        NOT NULL,
-    created_at    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    id               UUID                        NOT NULL,
+    name             VARCHAR(255),
+    description      VARCHAR(255),
+    avatar_id        VARCHAR(255),
+    avatar_mime_type VARCHAR(255),
+    client_secret    VARCHAR(255)                NOT NULL,
+    owner_id         UUID                        NOT NULL,
+    created_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT pk_projects PRIMARY KEY (id)
 );
 
 CREATE TABLE users
 (
-    id       UUID         NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    email    VARCHAR(255),
+    id               UUID         NOT NULL,
+    username         VARCHAR(255) NOT NULL,
+    password         VARCHAR(255) NOT NULL,
+    email            VARCHAR(255),
+    avatar_id        VARCHAR(255),
+    avatar_mime_type VARCHAR(255),
     CONSTRAINT pk_users PRIMARY KEY (id)
 );
 

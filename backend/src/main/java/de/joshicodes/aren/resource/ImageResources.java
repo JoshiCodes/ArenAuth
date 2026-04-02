@@ -28,6 +28,8 @@ public class ImageResources {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImageResources.class);
 
+    public static final int DEFAULT_SIZE = 512;
+
     @Inject
     SecurityIdentity identity;
 
@@ -37,11 +39,15 @@ public class ImageResources {
     @GET
     @Path("/user/{id}")
     @Produces({"image/png", "image/jpeg", "image/*"})
-    public Response getUserAvatar(@PathParam("id") String id) {
+    public Response getUserAvatar(@PathParam("id") String id, @QueryParam("size") Integer size) {
+
+        size = toValidSize(size);
+
         try {
             final Pair<byte[], String> response = uploadService.getFile(
                     UploadService.UploadType.USER_AVATAR,
-                    id
+                    id,
+                    size
             );
 
             if(response == null) {
@@ -61,11 +67,13 @@ public class ImageResources {
     @GET
     @Path("/project/{id}")
     @Produces({"image/png", "image/jpeg", "image/*"})
-    public Response getProjectAvatar(@PathParam("id") String id) {
+    public Response getProjectAvatar(@PathParam("id") String id, @QueryParam("size") Integer size) {
+        size = toValidSize(size);
         try {
             final Pair<byte[], String> response = uploadService.getFile(
                     UploadService.UploadType.PROJECT_AVATAR,
-                    id
+                    id,
+                    size
             );
 
             if(response == null) {
@@ -143,6 +151,14 @@ public class ImageResources {
                     .entity(Map.of("error", "Upload failed."))
                     .build();
         }
+    }
+
+    private int toValidSize(final Integer size) {
+        if(size == null) return DEFAULT_SIZE;
+        return switch(size) {
+            case 64, 128, 256, 512, 1024 -> size;
+            default -> DEFAULT_SIZE;
+        };
     }
 
     @POST

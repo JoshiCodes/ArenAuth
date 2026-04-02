@@ -7,6 +7,9 @@ import org.flywaydb.core.internal.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,7 +81,7 @@ public class UploadService {
         String uniqueFileName = id + "." + fileExtension;
         File targetFile = new File(typeDir, uniqueFileName);
 
-        long uploadedSize = writeFileWithSizeCheck(inputStream, targetFile);
+        long uploadedSize = writeFileWithSizeCheck(inputStream, targetFile, mimeType);
 
         LOG.info("File uploaded successfully: " + uniqueFileName + " (" + uploadedSize + " bytes) for " + uploadType);
 
@@ -88,7 +91,7 @@ public class UploadService {
     /**
      * Schreibt eine Datei und prüft die Größe während des Uploads
      */
-    private long writeFileWithSizeCheck(InputStream inputStream, File targetFile)
+    private long writeFileWithSizeCheck(InputStream inputStream, File targetFile, String mimeType)
             throws IOException {
         long totalSize = 0;
         byte[] buffer = new byte[8192];
@@ -107,6 +110,15 @@ public class UploadService {
 
                 fos.write(buffer, 0, read);
             }
+        }
+
+        if(targetFile.exists()) {
+            byte[] bytes = Files.readAllBytes(targetFile.toPath());
+            File resizedFile = new File(targetFile.getParent(), targetFile.getName().replace(".", "_512."));
+
+            bytes = resizeImage(bytes, 512, mimeType);
+            Files.write(resizedFile.toPath(), bytes);
+            LOG.info("File uploaded successfully: " + resizedFile.getName() + " (" + totalSize + " bytes)");
         }
 
         return totalSize;
@@ -146,7 +158,7 @@ public class UploadService {
         };
     }
 
-    public Pair<byte[], String> getFile(UploadType uploadType, String fileId) throws IOException {
+    public Pair<byte[], String> getFile(UploadType uploadType, String fileId, Integer size) throws IOException {
 
         if(UPLOAD_DIR == null) {
             return null;
@@ -173,8 +185,20 @@ public class UploadService {
                 return null;
             }
 
+            File resizedFile = new File(typeDir, fileId + "_" + size + "." + ending);
+            if(resizedFile.exists()) {
+                LOG.info("Loading cached resized image: {}", resizedFile.getName());
+                return Pair.of(Files.readAllBytes(resizedFile.toPath()), mimeType);
+            }
+
+            byte[] bytes = Files.readAllBytes(file.toPath());
+
+            bytes = resizeImage(bytes, size, mimeType);
+            Files.write(resizedFile.toPath(), bytes);
+            LOG.info("Resized resized image: {}", resizedFile.getName());
+
             return Pair.of(
-                    Files.readAllBytes(file.toPath()),
+                    bytes,
                     mimeType
             );
         } catch (IOException e) {
@@ -215,6 +239,35 @@ public class UploadService {
         } catch (IOException e) {
             return false;
         }
+    }
+
+    private byte[] resizeImage(byte[] imageBytes, Integer targetSize, String mimeType) throws IOException {
+
+        BufferedImage originalImage = ImageIO.read(new java.io.ByteArrayInputStream(imageBytes));
+
+        if(originalImage == null) {
+            return imageBytes;
+        }
+
+        int newWidth = targetSize;
+        int newHeight = targetSize;
+
+        Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+
+        java.awt.Graphics2D g2d = resizedImage.createGraphics();
+        g2d.drawImage(scaledImage, 0, 0, null);
+        g2d.dispose();
+
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        String format = mimeType.equals("image/png") ? "png" : "jpg";
+        ImageIO.write(resizedImage, format, baos);
+
+        LOG.info("Image resized from {} to {}x{}",
+                originalImage.getWidth() + "x" + originalImage.getHeight(),
+                newWidth, newHeight);
+
+        return baos.toByteArray();
     }
 
     public static enum UploadType {

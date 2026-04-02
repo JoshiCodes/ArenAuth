@@ -254,13 +254,13 @@ public class ProjectsResources {
             try (InputStream inputStream = Files.newInputStream(file.filePath())) {
                 String mimeType = file.contentType();
                 String fileName = uploadService.uploadFile(
-                        UploadService.UploadType.USER_AVATAR,
+                        UploadService.UploadType.PROJECT_AVATAR,
                         inputStream,
                         mimeType,
                         file.fileName()
                 );
                 if(fileName != null) {
-                    project.avatarId = user.avatarId;
+                    project.avatarId = fileName;
                     project.avatarMimeType = mimeType;
                 }
             } catch (IOException e) {

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import Link from "$lib/components/ui/Link.svelte";
-    import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
     import {goto} from "$app/navigation";
     import {onMount} from "svelte";
@@ -11,10 +11,12 @@
     let req: string|null;
 
     let projectName: string;
-    $: projectImg = PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", projectName ?? "Unknown");
+    let avatarId: string|null = null;
+    $: projectImg = avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + avatarId + "?size=64" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
     let scopes: string[];
     let redirectUri: string;
     let projectCreated: string;
+
 
     let availableScopes: [{name: string, description: string}]|[] = [];
 
@@ -39,7 +41,7 @@
                 month: "long",
                 day: "numeric"
             });
-            // TODO: Get img blob from data.project.imageBlob
+            avatarId = data.project.avatarId;
             console.log(data);
         }).catch(error => {
             goto("/dashboard?error=invalid_oauth_request");

@@ -3,7 +3,6 @@ package de.joshicodes.aren.resource;
 import de.joshicodes.aren.entities.KeyEntity;
 import de.joshicodes.aren.oauth.Scopes;
 import de.joshicodes.aren.service.KeyService;
-import io.vertx.ext.auth.impl.jose.JWK;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
@@ -14,11 +13,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.interfaces.RSAKey;
-import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPublicKeySpec;
 import java.util.*;
 import java.util.logging.Logger;
 

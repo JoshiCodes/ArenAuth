@@ -1,6 +1,5 @@
 package de.joshicodes.aren.entities.oauth;
 
-import de.joshicodes.aren.util.JwtUtil;
 import de.joshicodes.aren.util.OAuthUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

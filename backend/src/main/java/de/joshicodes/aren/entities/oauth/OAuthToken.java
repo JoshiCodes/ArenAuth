@@ -3,14 +3,11 @@ package de.joshicodes.aren.entities.oauth;
 import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.oauth.Scopes;
-import de.joshicodes.aren.util.OAuthUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "oauth_tokens")

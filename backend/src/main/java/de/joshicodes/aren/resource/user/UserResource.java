@@ -2,11 +2,9 @@ package de.joshicodes.aren.resource.user;
 
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.entities.dto.UserDTO;
-import de.joshicodes.aren.entities.oauth.OAuthToken;
 import de.joshicodes.aren.oauth.Scopes;
 import de.joshicodes.aren.security.oauth.OAuthAuthenticated;
 import de.joshicodes.aren.security.oauth.OAuthSecurityContext;
-import de.joshicodes.aren.security.oauth.OAuthUser;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

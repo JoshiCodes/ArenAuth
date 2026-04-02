@@ -2,7 +2,6 @@ package de.joshicodes.aren.security;
 
 import io.quarkus.security.identity.IdentityProviderManager;
 import io.quarkus.security.identity.SecurityIdentity;
-import io.quarkus.security.identity.request.AuthenticationRequest;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.quarkus.vertx.http.runtime.security.ChallengeData;
 import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
@@ -13,7 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.security.Principal;
-import java.util.Set;
 
 @ApplicationScoped
 public class SessionCookieAuthMechanism implements HttpAuthenticationMechanism {

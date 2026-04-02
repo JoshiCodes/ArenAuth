@@ -2,28 +2,31 @@ package de.joshicodes.aren.resource;
 
 import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
-import de.joshicodes.aren.security.oauth.OAuthAuthenticated;
 import de.joshicodes.aren.service.UploadService;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import org.flywaydb.core.internal.util.Pair;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 @Path("/api/avatar/")
 public class ImageResources {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ImageResources.class);
 
     @Inject
     SecurityIdentity identity;
@@ -47,8 +50,10 @@ public class ImageResources {
 
             return Response.ok(response.getLeft())
                     .type(response.getRight())
+                    .cacheControl(RuntimeDelegate.getInstance().createHeaderDelegate(CacheControl.class).fromString("max-age=3600, public"))
                     .build();
         } catch (IOException e) {
+            LOG.error("Failure while fetching avatar! ", e);
             throw new RuntimeException("Failed to get avatar");
         }
     }
@@ -69,8 +74,10 @@ public class ImageResources {
 
             return Response.ok(response.getLeft())
                     .type(response.getRight())
+                    .cacheControl(RuntimeDelegate.getInstance().createHeaderDelegate(CacheControl.class).fromString("max-age=3600, public"))
                     .build();
         } catch (IOException e) {
+            LOG.error("Failure while fetching avatar! ", e);
             throw new RuntimeException("Failed to get avatar");
         }
     }

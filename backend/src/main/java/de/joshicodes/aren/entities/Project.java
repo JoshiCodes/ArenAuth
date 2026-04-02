@@ -1,6 +1,5 @@
 package de.joshicodes.aren.entities;
 
-import io.netty.handler.codec.base64.Base64Encoder;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;

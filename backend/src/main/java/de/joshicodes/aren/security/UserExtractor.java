@@ -2,9 +2,7 @@ package de.joshicodes.aren.security;
 
 import de.joshicodes.aren.entities.User;
 import io.quarkus.security.identity.SecurityIdentity;
-import jakarta.ws.rs.core.Response;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class UserExtractor {

@@ -1,6 +1,5 @@
 package de.joshicodes.aren.entities.dto;
 
-import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.oauth.OAuthRequest;
 
 import java.time.Instant;

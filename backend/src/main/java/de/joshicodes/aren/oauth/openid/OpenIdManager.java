@@ -12,7 +12,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 
 @ApplicationScoped
 public class OpenIdManager {

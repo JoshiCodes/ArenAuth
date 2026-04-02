@@ -1,7 +1,5 @@
 package de.joshicodes.aren.service;
 
-import de.joshicodes.aren.entities.User;
-import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;

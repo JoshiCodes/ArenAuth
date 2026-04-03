@@ -51,7 +51,7 @@ public class WellKnownResources {
         config.put("authorization_endpoint", issuer + "/oauth2/authorize");
         config.put("token_endpoint", issuer + "/oauth2/token");
         config.put("jwks_uri", issuer + "/.well-known/jwks.json");
-        config.put("userinfo_endpoint", issuer + "/api/user/me");
+        config.put("userinfo_endpoint", issuer + "/api/v1/user/me");
         config.put("response_types_supported", List.of("code", "token", "id_token"));
         config.put("subject_types_supported", List.of("public"));
         config.put("id_token_signing_alg_values_supported", List.of("RS256"));

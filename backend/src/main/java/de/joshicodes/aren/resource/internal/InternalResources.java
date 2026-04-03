@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.Map;
 
-@Path("/api/internal/")
+@Path("/api/v1/internal/")
 public class InternalResources {
 
     @Inject

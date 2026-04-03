@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import type {HTMLInputTypeAttribute} from "svelte/elements";
+    import type {ChangeEventHandler, HTMLInputTypeAttribute} from "svelte/elements";
 
     export let type: HTMLInputTypeAttribute = "text";
     export let id: string;
@@ -9,6 +9,8 @@
     export let required: boolean = false;
 
     export let value: any = null;
+    export let onChange: ChangeEventHandler<HTMLInputElement> = () => {};
+    export let onKeyChange: ChangeEventHandler<HTMLInputElement> = () => {};
 
 </script>
 
@@ -17,6 +19,8 @@
     <input type={type}
            id={id}
            bind:value={value}
+           onchange={onChange}
+           onkeyup={onKeyChange}
            required={required}
            class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent
            border-0 border-b-2 border-default-medium appearance-none focus:outline-none

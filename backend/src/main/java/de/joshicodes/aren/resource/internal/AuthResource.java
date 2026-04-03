@@ -14,7 +14,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Map;
 
-@Path("/api/internal/auth")
+@Path("/api/v1/internal/auth")
 public class AuthResource {
 
     @ConfigProperty(name = "aren.jwt.issuer")

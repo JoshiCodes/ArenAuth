@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.HashMap;
 
-@Path("/api/user")
+@Path("/api/v1/user")
 @OAuthAuthenticated
 public class UserResource {
 

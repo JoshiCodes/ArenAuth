@@ -13,6 +13,7 @@
     import CheckInput from "$lib/components/ui/forms/CheckInput.svelte";
     import BarSelect from "$lib/components/ui/forms/BarSelect.svelte";
     import {PencilIcon} from "lucide-svelte";
+    import {toastStore, type ToastType} from "$lib/components/toasts/toastStore";
 
     let fileInput: HTMLInputElement;
 
@@ -25,7 +26,7 @@
         redirect_uris: ['']
     };
 
-    $: iconUrl = data.avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + data.avatarId + "?size=1024" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
+    $: iconUrl = data.avatarId ? PUBLIC_BACKEND_URL + "/api/v1/avatar/project/" + data.avatarId + "?size=1024" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
 
     let availableScopes: [{name: string, description: string}]|[] = [];
 
@@ -42,7 +43,7 @@
     $: builtOauthUrl = '';
 
     onMount(() => {
-        apiCall(`/api/internal/projects/${projectId}`)
+        apiCall(`/api/v1/internal/projects/${projectId}`)
             .then(async (res) => {
                 if (res.ok) {
                     const json = await res.json();
@@ -75,7 +76,7 @@
 
     function resetToken() {
         resetModalShown = false;
-        apiCall(`/api/internal/projects/${projectId}/rotateSecret`, {method: 'POST'}).then(async (res) => {
+        apiCall(`/api/v1/internal/projects/${projectId}/rotateSecret`, {method: 'POST'}).then(async (res) => {
             if (res.ok) {
                 const json = await res.json();
                 secret = json.newSecret;
@@ -92,7 +93,7 @@
     }
 
     function addRedirectUri() {
-        apiCall(`/api/internal/projects/${projectId}/redirectUri`,
+        apiCall(`/api/v1/internal/projects/${projectId}/redirectUri`,
             {
                 method: 'POST',
                 body: JSON.stringify({
@@ -118,7 +119,7 @@
     }
 
     function deleteRedirectUri(uri: string) {
-        apiCall(`/api/internal/projects/${projectId}/redirectUri`,
+        apiCall(`/api/v1/internal/projects/${projectId}/redirectUri`,
             {
                 method: 'DELETE',
                 body: JSON.stringify({
@@ -177,7 +178,7 @@
 
         const fd = new FormData();
         fd.append("file", file);
-        apiCall("/api/avatar/upload/project/" + projectId, {
+        apiCall("/api/v1/avatar/upload/project/" + projectId, {
             method: 'POST',
             body: fd
         })
@@ -188,6 +189,7 @@
                     if(json && json.avatarId) {
                         data.avatarId = json.avatarId;
                         error = '';
+                        toastStore.add('Project image updated successfully!', {type: 'success'});
                     } else {
                         error = "Failed to upload image: Invalid response from server.";
                     }

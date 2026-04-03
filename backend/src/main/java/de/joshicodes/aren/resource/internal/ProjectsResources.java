@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Path("/api/internal/projects")
+@Path("/api/v1/internal/projects")
 @Authenticated
 public class ProjectsResources {
 

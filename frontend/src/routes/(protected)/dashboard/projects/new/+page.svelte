@@ -24,7 +24,7 @@
         fd.append("description", description);
         if(image)
             fd.append("image", image);
-        fetch(PUBLIC_BACKEND_URL + "/api/internal/projects", {
+        fetch(PUBLIC_BACKEND_URL + "/api/v1/internal/projects", {
             method: "POST",
             credentials: 'include',
             body: fd

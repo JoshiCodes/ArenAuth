@@ -4,7 +4,7 @@
     export let project: { name: string, id: string, avatarId: string };
     export let isClickable: boolean = true;
 
-    const iconUrl = project.avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + project.avatarId : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(project.name));
+    const iconUrl = project.avatarId ? PUBLIC_BACKEND_URL + "/api/v1/avatar/project/" + project.avatarId : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(project.name));
 
 </script>
 

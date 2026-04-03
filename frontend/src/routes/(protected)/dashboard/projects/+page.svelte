@@ -14,7 +14,7 @@
 
     onMount(() => {
 
-        fetch(PUBLIC_BACKEND_URL + "/api/internal/projects", {credentials: 'include'})
+        fetch(PUBLIC_BACKEND_URL + "/api/v1/internal/projects", {credentials: 'include'})
             .then(res => res.json())
             .then(data => {
                 console.log(data);

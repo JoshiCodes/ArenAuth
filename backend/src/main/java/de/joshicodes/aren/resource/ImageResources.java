@@ -23,7 +23,7 @@ import java.nio.file.Files;
 import java.util.Map;
 import java.util.UUID;
 
-@Path("/api/avatar/")
+@Path("/api/v1/avatar/")
 public class ImageResources {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImageResources.class);

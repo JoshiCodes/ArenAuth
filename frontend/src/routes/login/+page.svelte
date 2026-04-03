@@ -28,7 +28,7 @@
         isLoading = true;
 
         try {
-            const response = await fetch(PUBLIC_BACKEND_URL + "/api/internal/auth/login", {
+            const response = await fetch(PUBLIC_BACKEND_URL + "/api/v1/internal/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import Navbar from "$lib/components/Navbar.svelte";
     import DashboardSidebar from "$lib/components/dashboard/DashboardSidebar.svelte";
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import Link from "$lib/components/ui/Link.svelte";
     import {onMount} from "svelte";
     import {apiCall} from "$lib/api";
-    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
     import BarInput from "$lib/components/ui/forms/BarInput.svelte";
     import Modal from "$lib/components/Modal.svelte";
@@ -14,10 +14,11 @@
     import BarSelect from "$lib/components/ui/forms/BarSelect.svelte";
     import {PencilIcon} from "lucide-svelte";
     import {toastStore, type ToastType} from "$lib/components/toasts/toastStore";
+    import {BACKEND_URL} from "$lib/vars";
 
     let fileInput: HTMLInputElement;
 
-    $: projectId = String($page.params.project);
+    $: projectId = String(page.params.project);
     $: data = {
         id: '',
         name: "Unknown",
@@ -26,11 +27,10 @@
         redirect_uris: ['']
     };
 
-    $: iconUrl = data.avatarId ? PUBLIC_BACKEND_URL + "/api/v1/avatar/project/" + data.avatarId + "?size=1024" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
+    $: iconUrl = data.avatarId ? BACKEND_URL + "/api/v1/avatar/project/" + data.avatarId + "?size=1024" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
 
     let availableScopes: [{name: string, description: string}]|[] = [];
 
-    $: error = '';
     $: isLoading = true;
 
     $: secret = '';
@@ -50,7 +50,7 @@
 
                     if(!json.id || !json.name) {
                         console.log(JSON.stringify(json));
-                        error = "Invalid response from Server.";
+                        toastStore.add("Invalid response from Server.", {type: "error"})
                         return;
                     }
                     data = {
@@ -62,7 +62,7 @@
                     };
 
                 } else {
-                    error = `Failed to fetch project data: ${res.status} ${res.statusText}`;
+                    toastStore.add(`Failed to fetch project data: ${res.status} ${res.statusText}`, {type: "error"});
                 }
                 isLoading = false;
             });
@@ -80,13 +80,12 @@
             if (res.ok) {
                 const json = await res.json();
                 secret = json.newSecret;
-                error = '';
             } else {
                 const json = await res.json();
                 if(json && json.error) {
-                    error = "Failed to reset Client Secret: " + json.error;
+                    toastStore.add("Failed to reset Client Secret: " + json.error, {type: "error"});
                 } else {
-                    error = `Failed to reset Client Secret: ${res.status} ${res.statusText}`;
+                    toastStore.add("Failed to reset Client Secret: " + res.status + " " + res.statusText, {type: "error"});
                 }
             }
         });
@@ -105,14 +104,13 @@
                 if(json && json.success) {
                     data.redirect_uris = [...data.redirect_uris, newRedirectUri]
                     newRedirectUri = '';
-                    error = '';
                 } else {
-                    alert(`Failed to add Redirect URI: Invalid response from server.`);
+                    toastStore.add(`Failed to add Redirect URI: Invalid response from server.`, {type: 'error'});
                 }
             } else {
                 const json = await res.json();
                 if(json && json.error) {
-                    error = "Failed to add Redirect URI: " + json.error;
+                    toastStore.add(`Failed to add Redirect URI: Invalid response from server.`, {type: 'error'});
                 }
             }
         });
@@ -130,14 +128,13 @@
                 const json = await res.json();
                 if(json && json.success) {
                     data.redirect_uris = data.redirect_uris.filter(r => r !== uri);
-                    error = '';
                 } else {
                     alert(`Failed to delete Redirect URI: Invalid response from server.`);
                 }
             } else {
                 const json = await res.json();
                 if(json && json.error) {
-                    error = "Failed to delete Redirect URI: " + json.error;
+                    toastStore.add("Failed to delete Redirect URI: " + json.error, {type: "error"});
                 }
             }
         });
@@ -153,7 +150,7 @@
             return checkbox && checkbox.checked;
         }).map(s => s.name);
 
-        const baseUrl = `${PUBLIC_BACKEND_URL}/oauth2/authorize?client_id=${projectId}&redirect_uri=${encodeURIComponent(builderSelectedUri)}&response_type=code`;
+        const baseUrl = `${BACKEND_URL}/oauth2/authorize?client_id=${projectId}&redirect_uri=${encodeURIComponent(builderSelectedUri)}&response_type=code`;
         const scopeParam = selectedScopes.length > 0 ? `&scope=${encodeURIComponent(selectedScopes.join(' '))}` : '';
         builtOauthUrl = baseUrl + scopeParam;
     }
@@ -167,12 +164,12 @@
         const file = files[0];
 
         if(!file.type.startsWith("image/")) {
-            error = "Please select a valid image file. (PNP,JPG, WebP)";
+            toastStore.add("Please select a valid image file. (PNP,JPG, WebP)", {type: "error"});
             return;
         }
 
         if(file.size > 5 * 1024 * 1024) { // 5MB limit
-            error = "Image size must be less than 5MB.";
+            toastStore.add("Image size must be less than 5MB.", {type: "error"});
             return;
         }
 
@@ -181,24 +178,24 @@
         apiCall("/api/v1/avatar/upload/project/" + projectId, {
             method: 'POST',
             body: fd
-        })
+        }, null
+        )
             .then(async (res) => {
                 console.log(res)
                 if(res.ok) {
                     const json = await res.json();
                     if(json && json.avatarId) {
                         data.avatarId = json.avatarId;
-                        error = '';
                         toastStore.add('Project image updated successfully!', {type: 'success'});
                     } else {
-                        error = "Failed to upload image: Invalid response from server.";
+                        toastStore.add("Failed to upload image: Invalid response from server.", {type: "error"});
                     }
                 } else {
                     const json = await res.json();
                     if(json && json.error) {
-                        error = "Failed to upload image: " + json.error;
+                        toastStore.add("Failed to upload image: " + json.error, {type: "error"});
                     } else {
-                        error = `Failed to upload image: ${res.status} ${res.statusText}`;
+                        toastStore.add("Failed to upload image: " + res.status + " " + res.statusText, {type: "error"});
                     }
                 }
             });
@@ -238,10 +235,6 @@
             </p>
 
             <h1 class="mt-2 text-4xl font-bold text-zinc-700 dark:text-zinc-50">{data.name}</h1>
-
-            {#if error}
-                <p class="mt-4 text-red-600 dark:text-red-400">{error}</p>
-            {/if}
 
             {#if isLoading}
                 <p class="mt-4 text-zinc-600 dark:text-zinc-400">Loading project data...</p>

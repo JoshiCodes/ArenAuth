@@ -1,13 +1,13 @@
 <script lang="ts">
 
     import {goto} from "$app/navigation";
-    import { page } from "$app/stores";
+    import { page } from "$app/state";
     import Navbar from "$lib/components/Navbar.svelte";
     import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import Link from "$lib/components/ui/Link.svelte";
-    import { PUBLIC_BACKEND_URL } from "$env/static/public";
+    import {BACKEND_URL} from "$lib/vars";
 
     let username = "";
     let password = "";
@@ -21,14 +21,14 @@
         return value;
     }
 
-    $: redirectTarget = sanitizeReturnTo($page.url.searchParams.get("returnTo"));
+    $: redirectTarget = sanitizeReturnTo(page.url.searchParams.get("returnTo"));
 
     async function handleLogin() {
         error = null;
         isLoading = true;
 
         try {
-            const response = await fetch(PUBLIC_BACKEND_URL + "/api/v1/internal/auth/login", {
+            const response = await fetch(BACKEND_URL + "/api/v1/internal/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),

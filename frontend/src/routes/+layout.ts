@@ -1,4 +1,4 @@
-import {PUBLIC_BACKEND_URL} from "$env/static/public";
+import {BACKEND_URL} from "$lib/vars";
 
 export const prerender = false;
 export const ssr = false;
@@ -6,7 +6,7 @@ export const ssr = false;
 export const load = async ({ fetch, depends }) => {
 	depends('app:me');
 
-	const res = await fetch(PUBLIC_BACKEND_URL + '/api/v1/internal/me', { credentials: 'include' });
+	const res = await fetch(BACKEND_URL + '/api/v1/internal/me', { credentials: 'include' });
 	if (!res.ok) {
 		return { me: null };
 	}

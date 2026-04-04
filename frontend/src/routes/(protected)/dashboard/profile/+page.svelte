@@ -5,10 +5,11 @@
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import {PencilIcon} from "lucide-svelte";
-    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import { PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import {onMount} from "svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import BottomNotification from "$lib/components/ui/BottomNotification.svelte";
+    import {BACKEND_URL} from "$lib/vars";
 
     type Me = {
         username: string;
@@ -27,7 +28,7 @@
     let isChanged = false;
 
     onMount(() => {
-        realIconUrl = (me && me.avatarId) ? PUBLIC_BACKEND_URL + "/api/v1/avatar/project/" + me.avatarId + "?size=512" : defaultIconUrl;
+        realIconUrl = (me && me.avatarId) ? BACKEND_URL + "/api/v1/avatar/project/" + me.avatarId + "?size=512" : defaultIconUrl;
         iconUrl = realIconUrl;
         username = me?.username ?? "";
     });

@@ -1,15 +1,17 @@
-import {PUBLIC_BACKEND_URL} from "$env/static/public";
+import { env } from "$env/dynamic/public";
 
 export async function apiCall(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    contentType: string|null = "application/json"
 ) {
-    const url = `${PUBLIC_BACKEND_URL}${endpoint}`
+    const url = `${env.PUBLIC_BACKEND_URL}${endpoint}`
 
     return fetch(url, {
         ...options,
         credentials: 'include',
         headers: {
+            ...(contentType != null ? {"Content-Type": contentType} : {}),
             ...options.headers
         }
     })

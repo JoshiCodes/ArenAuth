@@ -1,18 +1,19 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import Link from "$lib/components/ui/Link.svelte";
-    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import { PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
     import {goto} from "$app/navigation";
     import {onMount} from "svelte";
     import {apiCall, fetchAvailableScopes} from "$lib/api";
     import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
+    import {BACKEND_URL} from "$lib/vars";
 
     let req: string|null;
 
     let projectName: string;
     let avatarId: string|null = null;
-    $: projectImg = avatarId ? PUBLIC_BACKEND_URL + "/api/avatar/project/" + avatarId + "?size=128" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
+    $: projectImg = avatarId ? BACKEND_URL + "/api/avatar/project/" + avatarId + "?size=128" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.me.name));
     let scopes: string[];
     let redirectUri: string;
     let projectCreated: string;

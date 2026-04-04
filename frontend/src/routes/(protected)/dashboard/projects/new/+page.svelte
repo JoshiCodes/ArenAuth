@@ -4,11 +4,12 @@
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import Button from "$lib/components/ui/Button.svelte";
-    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import {BACKEND_URL} from "$lib/vars";
+    import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
 
     let name: string = "";
     let description: string = "";
-    let image: Blob|null = null; // TODO
+    let image: File|null = null;
     let imagePreview: string|null = null;
     let fileInput: HTMLInputElement;
 
@@ -24,7 +25,7 @@
         fd.append("description", description);
         if(image)
             fd.append("image", image);
-        fetch(PUBLIC_BACKEND_URL + "/api/v1/internal/projects", {
+        fetch(BACKEND_URL + "/api/v1/internal/projects", {
             method: "POST",
             credentials: 'include',
             body: fd

@@ -1,5 +1,4 @@
 *
+!target/
 !target/*-runner
-!target/*-runner.jar
-!target/lib/*
-!target/quarkus-app/*
+!src/main/docker/Dockerfile.native

@@ -1,0 +1,81 @@
+
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: arenauth-postgres
+    environment:
+      POSTGRES_DB: arenauth
+      POSTGRES_USER: arenauth
+      POSTGRES_PASSWORD: arenauth_secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arenauth"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - arenauth-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: arenauth-backend
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      QUARKUS_HTTP_HOST: 0.0.0.0
+      DB_USER: arenauth
+      DB_PASSWORD: arenauth_secure_password
+      DB_HOST: database
+      DB_NAME: arenauth
+
+      FRONTEND_URL: http://aren.lan:3000
+      CORS_ORIGINS: http://aren.lan:3000,http://backend:8080
+
+      JWT_ISSUER: http://aren.lan:8080
+      UPLOAD_DIR: uploads
+    ports:
+      - "8080:8080"
+    networks:
+      - arenauth-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/q/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: arenauth-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    networks:
+      - arenauth-network
+    environment:
+      PUBLIC_BACKEND_URL: http://aren.lan:8080
+      INTERNAL_BACKEND_URL: http://backend:8080
+      PUBLIC_FALLBACK_IMG_URL: https://ui-avatars.com/api/?background=893DC3FF&color=fff&name=%name%
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  postgres_data:
+
+networks:
+  arenauth-network:
+    driver: bridge

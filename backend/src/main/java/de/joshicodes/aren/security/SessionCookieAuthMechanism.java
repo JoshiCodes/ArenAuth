@@ -10,12 +10,14 @@ import io.vertx.core.http.Cookie;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
 
 import java.security.Principal;
 
 @ApplicationScoped
-@Priority(10)
+@Alternative
+@Priority(1)
 public class SessionCookieAuthMechanism implements HttpAuthenticationMechanism {
 
     public static final String COOKIE_NAME = "auth_session";
@@ -33,6 +35,7 @@ public class SessionCookieAuthMechanism implements HttpAuthenticationMechanism {
 
         return Uni.createFrom().optional(() -> sessionService.getSession(cookie.getValue()))
                 .onItem().ifNotNull().transform(session -> {
+                    System.out.println("Authenticated session: " + session);
                     return QuarkusSecurityIdentity.builder()
                             .setPrincipal((Principal) session::username)
                             .addAttribute("userId", session.userId())

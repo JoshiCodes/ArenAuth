@@ -1,16 +1,20 @@
 import { redirect } from '@sveltejs/kit';
 import {INTERNAL_BACKEND_URL} from "$lib/server_vars";
 
-export const load = async ({ fetch, url, depends, request }) => {
+export const load = async ({ fetch, url, depends, cookies }) => {
     depends('app:me');
 
-    const cookie = request.headers.get('cookie') ?? '';
-    console.log("(ASD) Cookie: ", cookie)
+    const cookieHeader = cookies
+        .getAll()
+        .map((c) => `${c.name}=${c.value}`)
+        .join('; ');
+
+    console.log('(SSR) outgoing cookieHeader:', cookieHeader);
 
     const res = await fetch(INTERNAL_BACKEND_URL + '/api/v1/internal/me', {
         credentials: 'include',
         headers: {
-            cookie
+            cookie: cookieHeader
         }
     });
 

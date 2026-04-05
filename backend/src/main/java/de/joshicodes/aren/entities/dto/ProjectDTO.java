@@ -1,11 +1,13 @@
 package de.joshicodes.aren.entities.dto;
 
 import de.joshicodes.aren.entities.Project;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+@RegisterForReflection
 public record ProjectDTO(UUID id, String name, String description, String avatarId, UUID ownerId,
                          Set<String> redirectUris, Instant createdAt) {
 

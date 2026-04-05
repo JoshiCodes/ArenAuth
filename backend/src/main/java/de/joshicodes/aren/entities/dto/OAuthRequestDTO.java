@@ -1,10 +1,12 @@
 package de.joshicodes.aren.entities.dto;
 
 import de.joshicodes.aren.entities.oauth.OAuthRequest;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@RegisterForReflection
 public record OAuthRequestDTO(UUID id, String clientId, String redirectUri, String scope, String state, ProjectDTO project, Instant expires) {
 
     public static OAuthRequestDTO from(OAuthRequest req) {

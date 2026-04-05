@@ -4,6 +4,7 @@ import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.oauth.Scopes;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.persistence.*;
 
 import java.time.Instant;

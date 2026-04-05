@@ -7,6 +7,7 @@ import de.joshicodes.aren.entities.oauth.OAuthToken;
 import de.joshicodes.aren.security.UserExtractor;
 import de.joshicodes.aren.security.oauth.OAuthAuthenticated;
 import de.joshicodes.aren.security.oauth.OAuthSecurityContext;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
@@ -111,6 +112,7 @@ public class OAuthResources {
 
     }
 
+    @RegisterForReflection
     public static record OAuthAuthorizeDTO( String req, boolean approved ) {}
 
 }

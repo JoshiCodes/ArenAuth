@@ -1,10 +1,12 @@
 package de.joshicodes.aren.entities.dto;
 
 import de.joshicodes.aren.entities.User;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Set;
 import java.util.UUID;
 
+@RegisterForReflection
 public record UserDTO(UUID id, String name, String avatarId, Set<String> roles) {
 
     public static UserDTO from(User user) {

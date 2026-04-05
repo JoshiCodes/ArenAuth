@@ -24,7 +24,7 @@ public class InternalResources {
     public Response me() {
         return Response.ok(Map.of(
                 "username", identity.getPrincipal().getName(),
-                "userId", identity.getAttribute("userId"),
+                "userId", identity.getAttribute("userId").toString(),
                 "roles", identity.getRoles()
         )).build();
     }

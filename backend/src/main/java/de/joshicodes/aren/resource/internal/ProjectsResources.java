@@ -5,6 +5,7 @@ import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.entities.dto.ProjectDTO;
 import de.joshicodes.aren.security.UserExtractor;
 import de.joshicodes.aren.service.UploadService;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.Nullable;
@@ -320,6 +321,7 @@ public class ProjectsResources {
         public @Nullable FileUpload image;
     }
 
+    @RegisterForReflection
     public static record RedirectUriDTO(String redirectUri) {}
 
 }

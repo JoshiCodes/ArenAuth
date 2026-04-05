@@ -3,6 +3,7 @@ package de.joshicodes.aren.resource;
 import de.joshicodes.aren.entities.Project;
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.service.UploadService;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
@@ -247,6 +248,7 @@ public class ImageResources {
         }
     }
 
+    @RegisterForReflection
     public static record ImageResponseDTO(UploadService.UploadType type, String avatarId) {
 
     }

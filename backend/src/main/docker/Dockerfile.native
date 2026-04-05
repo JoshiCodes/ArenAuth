@@ -16,9 +16,19 @@
 # The ` registry.access.redhat.com/ubi9/ubi-minimal:9.7` base image is based on UBI 9.
 # To use UBI 8, switch to `quay.io/ubi8/ubi-minimal:8.10`.
 ###
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7
+FROM registry.access.redhat.com/ubi9/ubi:9.7
 
-RUN microdnf install -y freetype fontconfig \
+RUN microdnf install -y \
+    freetype \
+    fontconfig \
+    libX11 \
+    libXext \
+    libXi \
+    libXtst \
+    libXrender \
+    libXrandr \
+    libXcursor \
+    libXinerama \
     && microdnf clean all
 
 WORKDIR /work/

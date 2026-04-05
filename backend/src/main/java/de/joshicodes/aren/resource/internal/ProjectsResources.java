@@ -312,6 +312,7 @@ public class ProjectsResources {
     }
 
 
+    @RegisterForReflection
     public static class CreateProjectDTO {
         @RestForm("name")
         public @Nullable String name;

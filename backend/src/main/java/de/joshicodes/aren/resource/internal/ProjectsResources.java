@@ -39,6 +39,7 @@ public class ProjectsResources {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProject(@PathParam("id") String id) {
 
+        System.out.println("Identity: " + identity);
         final User user = UserExtractor.getUser(identity);
         if(user == null) {
             return Response.status(Response.Status.UNAUTHORIZED).build();

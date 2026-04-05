@@ -20,7 +20,7 @@ import java.security.Principal;
 @Priority(1)
 public class SessionCookieAuthMechanism implements HttpAuthenticationMechanism {
 
-    public static final String COOKIE_NAME = "auth_session";
+    public static final String COOKIE_NAME = "auth_session_v2";
 
     @Inject SessionService sessionService;
 

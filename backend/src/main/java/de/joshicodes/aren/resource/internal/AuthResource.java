@@ -14,6 +14,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Map;
 
+import static de.joshicodes.aren.security.SessionCookieAuthMechanism.COOKIE_NAME;
+
 @Path("/api/v1/internal/auth")
 public class AuthResource {
 
@@ -49,7 +51,7 @@ public class AuthResource {
 
         final Session session = sessionService.createSession(user);
 
-        final NewCookie authCookie = new NewCookie.Builder("auth_session")
+        final NewCookie authCookie = new NewCookie.Builder(COOKIE_NAME)
                 .value(session.id())
                 .path("/")
                 .domain(cookieDomain)
@@ -73,12 +75,12 @@ public class AuthResource {
     @Path("/logout")
     public Response logout(@Context HttpHeaders headers) {
 
-        Cookie c = headers.getCookies().get("auth_session");
+        Cookie c = headers.getCookies().get(COOKIE_NAME);
         if (c != null) {
             sessionService.invalidate(c.getValue());
         }
 
-        final NewCookie authCookie = new NewCookie.Builder("auth_session")
+        final NewCookie authCookie = new NewCookie.Builder(COOKIE_NAME)
                 .value("")
                 .path("/")
                 .domain(cookieDomain)

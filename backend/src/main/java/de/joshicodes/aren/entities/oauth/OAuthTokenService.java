@@ -5,6 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +18,7 @@ public class OAuthTokenService {
     OAuthUtil oAuthUtil;
 
     @Transactional
-    public OAuthToken create(final OAuthAuthorizationCode code) {
+    public OAuthToken create(final OAuthAuthorizationCode code) throws NoSuchAlgorithmException, InvalidKeySpecException {
         OAuthToken token = new OAuthToken();
         token.project = code.project;
         token.user = code.user;
@@ -31,7 +33,7 @@ public class OAuthTokenService {
     }
 
     @Transactional
-    public OAuthToken create(final OAuthToken oldToken) {
+    public OAuthToken create(final OAuthToken oldToken) throws NoSuchAlgorithmException, InvalidKeySpecException {
         OAuthToken token = new OAuthToken();
         token.project = oldToken.project;
         token.user = oldToken.user;

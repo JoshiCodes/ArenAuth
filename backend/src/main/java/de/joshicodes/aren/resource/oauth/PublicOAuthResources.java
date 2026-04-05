@@ -228,7 +228,13 @@ public class PublicOAuthResources {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_refresh_token")).build();
         }
 
-        final OAuthToken newToken = tokenService.create(token);
+        final OAuthToken newToken;
+        try {
+            newToken = tokenService.create(token);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            System.err.println("Failed to create new token during refresh: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "token_generation_failed")).build();
+        }
         token.delete();
 
         return Response.ok(Map.of(
@@ -255,7 +261,13 @@ public class PublicOAuthResources {
 
         final String nonce = authCode.nonce;
 
-        final OAuthToken token = tokenService.create(authCode);
+        final OAuthToken token;
+        try {
+            token = tokenService.create(authCode);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            System.err.println("Failed to create token from auth code: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "token_generation_failed")).build();
+        }
         authCode.delete();
 
         HashMap<String, Object> map = new HashMap<>(Map.of(

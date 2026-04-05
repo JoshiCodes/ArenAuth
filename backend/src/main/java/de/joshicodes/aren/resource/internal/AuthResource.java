@@ -23,6 +23,9 @@ public class AuthResource {
     @ConfigProperty(name = "aren.use_https", defaultValue = "false")
     boolean isSecure;
 
+    @ConfigProperty(name = "aren.cookie-domain")
+    String cookieDomain;
+
     @Inject
     SessionService sessionService;
 
@@ -49,6 +52,7 @@ public class AuthResource {
         final NewCookie authCookie = new NewCookie.Builder("auth_session")
                 .value(session.id())
                 .path("/")
+                .domain(cookieDomain)
                 .httpOnly(true)
                 .secure(isSecure)
                 .maxAge((int) SessionService.TTL.getSeconds())
@@ -77,6 +81,7 @@ public class AuthResource {
         final NewCookie authCookie = new NewCookie.Builder("auth_session")
                 .value("")
                 .path("/")
+                .domain(cookieDomain)
                 .httpOnly(true)
                 .secure(isSecure)
                 .maxAge(0)

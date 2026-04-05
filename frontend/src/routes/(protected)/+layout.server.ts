@@ -6,7 +6,7 @@ export const load = async ({ fetch, url, depends, request }) => {
 
     const cookie = request.headers.get('cookie') ?? '';
 
-    const res = await globalThis.fetch(INTERNAL_BACKEND_URL + '/api/v1/internal/me', {
+    const res = await fetch(INTERNAL_BACKEND_URL + '/api/v1/internal/me', {
         headers: {
             cookie
         }

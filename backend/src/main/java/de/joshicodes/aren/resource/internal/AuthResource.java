@@ -52,7 +52,7 @@ public class AuthResource {
                 .httpOnly(true)
                 .secure(isSecure)
                 .maxAge((int) SessionService.TTL.getSeconds())
-                .sameSite(NewCookie.SameSite.LAX)
+                .sameSite(isSecure ? NewCookie.SameSite.NONE : NewCookie.SameSite.LAX)
                 .build();
 
         return Response.ok().entity(

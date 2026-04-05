@@ -1,10 +1,14 @@
 import { redirect } from '@sveltejs/kit';
-import {BACKEND_URL} from "$lib/vars";
+import {INTERNAL_BACKEND_URL} from "$lib/server_vars";
 
-export const load = async ({ fetch }) => {
-    await fetch(BACKEND_URL + '/api/v1/internal/auth/logout', {
+export const load = async ({ request }) => {
+    const cookie = request.headers.get('cookie') ?? '';
+
+    await globalThis.fetch(INTERNAL_BACKEND_URL + '/api/v1/internal/auth/logout', {
         method: 'POST',
-        credentials: 'include'
+        headers: {
+            cookie
+        }
     });
 
     throw redirect(303, '/');

@@ -1,13 +1,15 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import Link from "$lib/components/ui/Link.svelte";
-    import { PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
     import {goto} from "$app/navigation";
     import {onMount} from "svelte";
     import {apiCall, fetchAvailableScopes} from "$lib/api";
     import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
     import {BACKEND_URL} from "$lib/vars";
+    import { env } from "$env/dynamic/public";
+
+    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
     let req: string|null;
 

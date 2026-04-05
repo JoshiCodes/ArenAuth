@@ -1,10 +1,13 @@
 <script lang="ts">
-    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import { env } from "$env/dynamic/public";
+    import {BACKEND_URL} from "$lib/vars";
+
+    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
     export let project: { name: string, id: string, avatarId: string };
     export let isClickable: boolean = true;
 
-    const iconUrl = project.avatarId ? PUBLIC_BACKEND_URL + "/api/v1/avatar/project/" + project.avatarId : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(project.name));
+    const iconUrl = project.avatarId ? BACKEND_URL + "/api/v1/avatar/project/" + project.avatarId : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(project.name));
 
 </script>
 

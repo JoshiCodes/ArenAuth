@@ -4,7 +4,10 @@
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Link from "$lib/components/ui/Link.svelte";
-    import {PUBLIC_BACKEND_URL, PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import { env } from "$env/dynamic/public";
+    import {BACKEND_URL} from "$lib/vars";
+
+    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
     type Me = {
         username: string;
@@ -15,7 +18,7 @@
 
     $: me = (page.data.me as Me | null | undefined) ?? null;
 
-    $: iconUrl = (me && me.avatarId) ? PUBLIC_BACKEND_URL + "/api/v1/avatar/project/" + me.avatarId + "?size=512" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(me ? me.username : "Unknown User"));
+    $: iconUrl = (me && me.avatarId) ? BACKEND_URL + "/api/v1/avatar/project/" + me.avatarId + "?size=512" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(me ? me.username : "Unknown User"));
 
 </script>
 

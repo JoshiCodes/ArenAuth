@@ -5,8 +5,9 @@
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import {BACKEND_URL} from "$lib/vars";
-    import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
+    import { env } from "$env/dynamic/public";
 
+    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
     let name: string = "";
     let description: string = "";
     let image: File|null = null;

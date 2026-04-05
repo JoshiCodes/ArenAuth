@@ -6,7 +6,6 @@
     import Link from "$lib/components/ui/Link.svelte";
     import {onMount} from "svelte";
     import {apiCall} from "$lib/api";
-    import {PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import Button from "$lib/components/ui/Button.svelte";
     import BarInput from "$lib/components/ui/forms/BarInput.svelte";
     import Modal from "$lib/components/Modal.svelte";
@@ -15,6 +14,9 @@
     import {PencilIcon} from "lucide-svelte";
     import {toastStore, type ToastType} from "$lib/components/toasts/toastStore";
     import {BACKEND_URL} from "$lib/vars";
+    import { env } from "$env/dynamic/public";
+
+    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
     let fileInput: HTMLInputElement;
 

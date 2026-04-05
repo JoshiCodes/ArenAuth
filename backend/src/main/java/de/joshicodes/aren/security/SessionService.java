@@ -1,6 +1,7 @@
 package de.joshicodes.aren.security;
 
 import de.joshicodes.aren.entities.User;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.security.SecureRandom;
@@ -19,10 +20,15 @@ public class SessionService {
      *      - move from in-memory to DB. (maybe)
      */
 
-    private static final SecureRandom RANDOM = new SecureRandom();
+    private static SecureRandom RANDOM;
     public static final Duration TTL = Duration.ofHours(8);
 
     private final Map<String, Session> sessions = new ConcurrentHashMap<>();
+
+    @PostConstruct
+    void init() {
+        RANDOM = new SecureRandom();
+    }
 
     public Session createSession(final User user) {
         final String id = newId();

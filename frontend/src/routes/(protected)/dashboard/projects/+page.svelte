@@ -7,14 +7,14 @@
     import Link from "$lib/components/ui/Link.svelte";
     import {onMount} from "svelte";
     import ProjectCardSkeleton from "$lib/components/dashboard/ProjectCardSkeleton.svelte";
-    import {PUBLIC_BACKEND_URL} from "$env/static/public";
+    import {BACKEND_URL} from "$lib/vars";
 
     let loading = true;
     let projects: { name: string, id: string, avatarId: string }[] = [];
 
     onMount(() => {
 
-        fetch(PUBLIC_BACKEND_URL + "/api/v1/internal/projects", {credentials: 'include'})
+        fetch(BACKEND_URL + "/api/v1/internal/projects", {credentials: 'include'})
             .then(res => res.json())
             .then(data => {
                 console.log(data);

@@ -5,11 +5,13 @@
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import {PencilIcon} from "lucide-svelte";
-    import { PUBLIC_FALLBACK_IMG_URL} from "$env/static/public";
     import {onMount} from "svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import BottomNotification from "$lib/components/ui/BottomNotification.svelte";
     import {BACKEND_URL} from "$lib/vars";
+    import { env } from "$env/dynamic/public";
+
+    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
     type Me = {
         username: string;

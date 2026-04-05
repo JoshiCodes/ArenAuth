@@ -20,6 +20,9 @@ public class AuthResource {
     @ConfigProperty(name = "aren.jwt.issuer")
     String issuer;
 
+    @ConfigProperty(name = "aren.use_https", defaultValue = "false")
+    boolean isSecure;
+
     @Inject
     SessionService sessionService;
 
@@ -47,7 +50,7 @@ public class AuthResource {
                 .value(session.id())
                 .path("/")
                 .httpOnly(true)
-                .secure(false) // TODO: Read from environment variable for production! In prod -> true
+                .secure(isSecure)
                 .maxAge((int) SessionService.TTL.getSeconds())
                 .sameSite(NewCookie.SameSite.LAX)
                 .build();
@@ -75,7 +78,7 @@ public class AuthResource {
                 .value("")
                 .path("/")
                 .httpOnly(true)
-                .secure(false) // TODO: Read from environment variable for production! In prod -> true
+                .secure(isSecure)
                 .maxAge(0)
                 .sameSite(NewCookie.SameSite.LAX)
                 .build();

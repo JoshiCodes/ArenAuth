@@ -3,6 +3,9 @@ name: Build and Push Frontend/Backend Images (Single-Arch Tags)
 on:
   push:
     branches: ["main"]
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 permissions:

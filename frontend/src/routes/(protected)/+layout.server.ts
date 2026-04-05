@@ -5,8 +5,10 @@ export const load = async ({ fetch, url, depends, request }) => {
     depends('app:me');
 
     const cookie = request.headers.get('cookie') ?? '';
+    console.log("(ASD) Cookie: ", cookie)
 
     const res = await fetch(INTERNAL_BACKEND_URL + '/api/v1/internal/me', {
+        credentials: 'include',
         headers: {
             cookie
         }

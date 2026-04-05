@@ -18,7 +18,7 @@
 ###
 FROM registry.access.redhat.com/ubi9/ubi:9.7
 
-RUN microdnf install -y \
+RUN dnf install -y \
     freetype \
     fontconfig \
     libX11 \
@@ -29,7 +29,7 @@ RUN microdnf install -y \
     libXrandr \
     libXcursor \
     libXinerama \
-    && microdnf clean all
+    && dnf clean all
 
 WORKDIR /work/
 RUN chown 1001 /work \

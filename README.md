@@ -36,10 +36,13 @@ ArenAuth is a self-hosted authentication and authorization platform. It provides
 
 ## Install
 > [!Note]
-> Currently, the docker images are not published to any registry, so you need to build them yourself. The instructions for building the images are in the next section.
+> Currently, the docker images are only published for this repository.
+> You may need to implement a custom registry to use github (ghcr.io) images.
+> See [this guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) for more information.
 
 To install ArenAuth, copy the [docker-compose.yaml](https://github.com/JoshiCodes/ArenAuth/blob/master/docker/docker-compose.yaml)
 and the [.env.docker](https://github.com/JoshiCodes/ArenAuth/blob/master/docker/.env.docker) files to your server (or set the environment variables manually).
+Make sure to choose the corrent architecture for the docker images (amd64 or arm64) in the docker-compose.yaml file. Default is arm64. <br>
 Then, make sure to update the environment variables in the .env.docker file (or manually) to fit your needs.
 I do recommend running both the backend and frontend on the same domain, using a reverse proxy (like nginx or caddy).
 The most important variables to change are:

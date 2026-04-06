@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
@@ -282,8 +281,8 @@ public class UploadService {
                 int[][] kernel = new int[4][4];
                 for (int ky = -1; ky <= 2; ky++) {
                     for (int kx = -1; kx <= 2; kx++) {
-                        int px = Math.clamp(original.getWidth() - 1, 0, x0 + kx);
-                        int py = Math.clamp(original.getHeight() - 1, 0, y0 + ky);
+                        int px = Math.clamp(x0 + kx, 0, original.getWidth() - 1);
+                        int py = Math.clamp(y0 + ky, 0, original.getHeight() - 1);
                         kernel[ky + 1][kx + 1] = original.getRGB(px, py);
                     }
                 }

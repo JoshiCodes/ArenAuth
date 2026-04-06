@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.flywaydb.core.internal.util.Pair;
+import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -255,23 +256,20 @@ public class UploadService {
             return imageBytes;
         }
 
-        int newWidth = targetSize;
-        int newHeight = targetSize;
-
-        Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-
-        java.awt.Graphics2D g2d = resizedImage.createGraphics();
-        g2d.drawImage(scaledImage, 0, 0, null);
-        g2d.dispose();
+        // Scalr ist AWT-frei und GraalVM-kompatibel
+        BufferedImage resizedImage = Scalr.resize(
+                originalImage,
+                Scalr.Method.BALANCED,
+                targetSize,
+                targetSize,
+                Scalr.OP_ANTIALIAS
+        );
 
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
         String format = mimeType.equals("image/png") ? "png" : "jpg";
         ImageIO.write(resizedImage, format, baos);
 
-        LOG.info("Image resized from {} to {}x{}",
-                originalImage.getWidth() + "x" + originalImage.getHeight(),
-                newWidth, newHeight);
+        LOG.info("Image resized to {}x{}", targetSize, targetSize);
 
         return baos.toByteArray();
     }

@@ -266,6 +266,7 @@ public class ProjectsResources {
                     project.avatarMimeType = mimeType;
                 }
             } catch (IOException e) {
+                System.err.println(e.getMessage());
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                         Map.of("error", "Failed to upload image")
                 ).build();

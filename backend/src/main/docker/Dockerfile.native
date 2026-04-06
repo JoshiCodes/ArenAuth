@@ -28,6 +28,12 @@ RUN chown 1001 /work \
 COPY --chown=1001:root --chmod=0755 target/*.so /work/
 COPY --chown=1001:root --chmod=0755 target/*-runner /work/application
 
+RUN mkdir -p /opt/aren/uploads \
+    && chown 1001:root /opt/aren/uploads \
+    && chmod "g+rwX" /opt/aren/uploads
+
+ENV UPLOAD_DIR=/opt/aren/uploads
+
 EXPOSE 8080
 USER 1001
 

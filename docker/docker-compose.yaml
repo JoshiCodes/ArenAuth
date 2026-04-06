@@ -1,12 +1,10 @@
-
 services:
   database:
     image: postgres:16-alpine
-    container_name: arenauth-postgres
     environment:
       POSTGRES_DB: arenauth
       POSTGRES_USER: arenauth
-      POSTGRES_PASSWORD: arenauth_secure_password
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-arenauth_secure_password}
     ports:
       - "5432:5432"
     volumes:
@@ -20,25 +18,24 @@ services:
       - arenauth-network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: src/main/docker/Dockerfile.jvm
-    container_name: arenauth-backend
+    image: ghcr.io/joshicodes/arenauth/backend:arm64
     depends_on:
       database:
         condition: service_healthy
     environment:
       QUARKUS_HTTP_HOST: 0.0.0.0
       DB_USER: arenauth
-      DB_PASSWORD: arenauth_secure_password
+      DB_PASSWORD: ${DB_PASSWORD:-arenauth_secure_password}
       DB_HOST: database
       DB_NAME: arenauth
 
-      FRONTEND_URL: http://aren.lan:3000
-      CORS_ORIGINS: http://aren.lan:3000,http://backend:8080
+      USE_HTTPS: ${USE_HTTPS:-false}
 
-      JWT_ISSUER: http://aren.lan:8080
-      UPLOAD_DIR: uploads
+      FRONTEND_URL: ${FRONTEND_URL}
+      CORS_ORIGINS: ${FRONTEND_URL},http://frontend:3000
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN}
+
+      JWT_ISSUER: ${BACKEND_URL}
     ports:
       - "8080:8080"
     networks:
@@ -49,12 +46,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+    volumes:
+      - arenauth_uploads:/opt/aren/uploads
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: arenauth-frontend
+    image: ghcr.io/joshicodes/arenauth/frontend:arm64
     depends_on:
       backend:
         condition: service_healthy
@@ -63,8 +59,8 @@ services:
     networks:
       - arenauth-network
     environment:
-      PUBLIC_BACKEND_URL: http://aren.lan:8080
-      INTERNAL_BACKEND_URL: http://backend:8080
+      PUBLIC_BACKEND_URL: ${BACKEND_URL}
+      INTERNAL_BACKEND_URL: ${INTERNAL_BACKEND_URL}
       PUBLIC_FALLBACK_IMG_URL: https://ui-avatars.com/api/?background=893DC3FF&color=fff&name=%name%
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
@@ -75,7 +71,8 @@ services:
 
 volumes:
   postgres_data:
+  arenauth_uploads:
 
 networks:
   arenauth-network:
-    driver: bridge
+      driver: bridge

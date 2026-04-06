@@ -38,10 +38,25 @@ ArenAuth is a self-hosted authentication and authorization platform. It provides
 > [!Note]
 > Currently, the docker images are not published to any registry, so you need to build them yourself. The instructions for building the images are in the next section.
 
-To install ArenAuth copy the `docker-compose.yml` file to your server.
-Make sure to configure the environment variables in the `docker-compose.yml` file according to your needs (e.g., database credentials, JWT secret, etc.).
+To install ArenAuth, copy the [docker-compose.yaml](https://github.com/JoshiCodes/ArenAuth/blob/master/docker/docker-compose.yaml)
+and the [.env.docker](https://github.com/JoshiCodes/ArenAuth/blob/master/docker/.env.docker) files to your server (or set the environment variables manually).
+Then, make sure to update the environment variables in the .env.docker file (or manually) to fit your needs.
+I do recommend running both the backend and frontend on the same domain, using a reverse proxy (like nginx or caddy).
+The most important variables to change are:
+- `FRONTEND_URL`: The frontend url (with https:// or http://) | This is the general frontend url.
+- `BACKEND_URL`: The backend url (with https:// or http://) | This is the general backend url.
+- `INTERNAL_BACKEND_URL`: The backend url used internally by the backend (with http://) | I do recommend setting this to the same as BACKEND_URL or something like 'backend:8080' (if using docker).
+- `COOKIE_DOMAIN`: Your domain (without https:// or http://) | This is used for setting the cookie domain, so make sure to set this correctly.
+- `USE_HTTPS`: Whether or not you plan on using https. | This is used for setting the cookie.
 
-Then, run the following command to start the application:
+I do recommend setting the FRONTEND_URL to something like `https://auth.yourdomain.tld` and BACKEND_URL and INTERNAL_BACKEND_URL to the same. 
+In this case, you will need to set the `COOKIE_DOMAIN` to `auth.yourdomain.tld` and `USE_HTTPS` to `true`.
+Then, use a reverse proxy to route the traffic to the corresponding services.
+You will need to serve / to the frontend container (default port 3000).
+Then, route /api, /oauth2 and /.well-known to the backend container (with the path) (default port 8080). *This may get changed in the future.* (e.g. auth.yourdomain.tld/api → (local backend url):8080/api)
+Of course, if you change any of the ports, you have to update your proxy configuration and environment variables accordingly.
+
+To start your application, run the following command:
 ```bash
 docker-compose up -d
 ```

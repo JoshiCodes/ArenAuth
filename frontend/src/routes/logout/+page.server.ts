@@ -1,8 +1,6 @@
-// src/routes/logout/+page.server.ts
-import { redirect } from '@sveltejs/kit';
 import { INTERNAL_BACKEND_URL } from '$lib/server_vars';
 import { applyBackendCookie } from '$lib/server/cookies';
-import type {PageServerLoad} from "../../../.svelte-kit/types/src/routes/login/$types";
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ request, cookies }) => {
     const cookie = request.headers.get('cookie') ?? '';
@@ -23,5 +21,5 @@ export const load: PageServerLoad = async ({ request, cookies }) => {
         console.error('Logout backend failed', e);
     }
 
-    throw redirect(303, '/');
+    return {};
 };

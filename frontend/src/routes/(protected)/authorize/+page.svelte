@@ -5,7 +5,7 @@
     import {goto} from "$app/navigation";
     import {onMount} from "svelte";
     import {apiCall, fetchAvailableScopes} from "$lib/api";
-    import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
+    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import {BACKEND_URL} from "$lib/vars";
     import { env } from "$env/dynamic/public";
 
@@ -81,7 +81,7 @@
 </script>
 
 <Navbar />
-<BackgroundBlob />
+<BackgroundBlobs />
 
 <div class="w-screen h-screen flex justify-center content-center items-center">
     <div class="px-2 py-4 mx-2 dark:bg-zinc-950 rounded-lg">

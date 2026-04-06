@@ -1,7 +1,6 @@
 <script lang="ts">
 
     import type {HTMLInputTypeAttribute} from "svelte/elements";
-    import Button from "$lib/components/ui/Button.svelte";
 
     export let type: HTMLInputTypeAttribute = "text";
     export let id: string;

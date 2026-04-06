@@ -5,7 +5,7 @@
     export let type: HTMLInputTypeAttribute = "text";
     export let id: string;
     export let label: string;
-    export let name: string|null;
+    export let name: string|null = null;
 
     export let hasError: boolean = false;
 

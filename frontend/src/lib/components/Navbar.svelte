@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import { UserRound } from "lucide-svelte";
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Link from "$lib/components/ui/Link.svelte";
@@ -9,13 +8,6 @@
     import {goto} from "$app/navigation";
 
     const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
-
-    type Me = {
-        username: string;
-        userId: string;
-        roles: string[];
-        avatarId: string | null;
-    };
 
     $: me = (page.data.me as Me | null | undefined) ?? null;
 

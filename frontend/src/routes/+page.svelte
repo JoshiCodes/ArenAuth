@@ -1,10 +1,12 @@
 <script lang="ts">
 import Navbar from "$lib/components/Navbar.svelte";
 import Footer from "$lib/components/Footer.svelte";
-import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
+import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
+import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
 </script>
 
-<BackgroundBlob />
+<BackgroundBlobs />
+<BackgroundGrid />
 
 <Navbar />
 

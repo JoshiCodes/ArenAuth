@@ -6,6 +6,7 @@
     import Button from "$lib/components/ui/Button.svelte";
     import {BACKEND_URL} from "$lib/vars";
     import { env } from "$env/dynamic/public";
+    import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
 
     const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
     let name: string = "";
@@ -83,6 +84,7 @@
 
 </script>
 
+<BackgroundBlob class="top-32 right-6 w-125 h-32 rounded-lg" />
 <Navbar />
 <DashboardSidebar />
 

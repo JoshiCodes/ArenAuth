@@ -1,7 +1,7 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     import Navbar from '$lib/components/Navbar.svelte';
-    import BackgroundBlob from '$lib/components/BackgroundBlob.svelte';
+    import BackgroundBlobs from '$lib/components/BackgroundBlobs.svelte';
     import Button from '$lib/components/ui/Button.svelte';
     import FloatingInput from '$lib/components/ui/forms/FloatingInput.svelte';
     import Link from '$lib/components/ui/Link.svelte';
@@ -27,7 +27,7 @@
 
 </script>
 
-<BackgroundBlob />
+<BackgroundBlobs />
 <Navbar />
 
 <div class="min-h-screen w-full flex justify-center items-center">

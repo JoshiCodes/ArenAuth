@@ -15,6 +15,7 @@
     import {toastStore, type ToastType} from "$lib/components/toasts/toastStore";
     import {BACKEND_URL} from "$lib/vars";
     import { env } from "$env/dynamic/public";
+    import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
 
     const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
@@ -213,6 +214,7 @@
 
 <Navbar />
 <DashboardSidebar />
+<BackgroundBlob class="top-32 right-6 w-125 h-32 rounded-lg" />
 
 <Modal id="reset-token-modal" title="Reset Client Secret" bind:visible={resetModalShown}>
     <p>

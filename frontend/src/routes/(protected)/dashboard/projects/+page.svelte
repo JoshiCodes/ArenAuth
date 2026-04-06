@@ -8,6 +8,7 @@
     import {onMount} from "svelte";
     import ProjectCardSkeleton from "$lib/components/dashboard/ProjectCardSkeleton.svelte";
     import {BACKEND_URL} from "$lib/vars";
+    import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
 
     let loading = true;
     let projects: { name: string, id: string, avatarId: string }[] = [];
@@ -28,6 +29,8 @@
 
 <Navbar />
 <DashboardSidebar />
+
+<BackgroundBlob class="top-32 right-6 w-125 h-32 rounded-lg" />
 
 <DashboardComponent>
     <div class="mt-6 w-full h-full">

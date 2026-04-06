@@ -18,19 +18,6 @@
 ###
 FROM registry.access.redhat.com/ubi9/ubi:9.7
 
-RUN dnf install -y \
-    freetype \
-    fontconfig \
-    libX11 \
-    libXext \
-    libXi \
-    libXtst \
-    libXrender \
-    libXrandr \
-    libXcursor \
-    libXinerama \
-    && dnf clean all
-
 WORKDIR /work/
 RUN chown 1001 /work \
     && chmod "g+rwX" /work \

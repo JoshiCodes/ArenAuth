@@ -4,17 +4,13 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.flywaydb.core.internal.util.Pair;
-import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.UUID;
 
@@ -250,28 +246,88 @@ public class UploadService {
 
     private byte[] resizeImage(byte[] imageBytes, Integer targetSize, String mimeType) throws IOException {
 
-        BufferedImage originalImage = ImageIO.read(new java.io.ByteArrayInputStream(imageBytes));
-
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
         if(originalImage == null) {
             return imageBytes;
         }
 
-        // Scalr ist AWT-frei und GraalVM-kompatibel
-        BufferedImage resizedImage = Scalr.resize(
-                originalImage,
-                Scalr.Method.BALANCED,
-                targetSize,
-                targetSize,
-                Scalr.OP_ANTIALIAS
-        );
+        BufferedImage resizedImage = bicubicResize(originalImage, targetSize, targetSize);
 
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String format = mimeType.equals("image/png") ? "png" : "jpg";
         ImageIO.write(resizedImage, format, baos);
 
-        LOG.info("Image resized to {}x{}", targetSize, targetSize);
+        LOG.info("Image resized to {}x{} with Bicubic", targetSize, targetSize);
 
         return baos.toByteArray();
+    }
+
+    private BufferedImage bicubicResize(BufferedImage original, int newWidth, int newHeight) {
+        BufferedImage resized = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+
+        double scaleX = (double) original.getWidth() / newWidth;
+        double scaleY = (double) original.getHeight() / newHeight;
+
+        for (int y = 0; y < newHeight; y++) {
+            for (int x = 0; x < newWidth; x++) {
+                double srcX = x * scaleX;
+                double srcY = y * scaleY;
+
+                int x0 = (int) Math.floor(srcX);
+                int y0 = (int) Math.floor(srcY);
+
+                double dx = srcX - x0;
+                double dy = srcY - y0;
+
+                int[][] kernel = new int[4][4];
+                for (int ky = -1; ky <= 2; ky++) {
+                    for (int kx = -1; kx <= 2; kx++) {
+                        int px = Math.clamp(original.getWidth() - 1, 0, x0 + kx);
+                        int py = Math.clamp(original.getHeight() - 1, 0, y0 + ky);
+                        kernel[ky + 1][kx + 1] = original.getRGB(px, py);
+                    }
+                }
+
+                int rgb = bicubicInterpolate(kernel, dx, dy);
+                resized.setRGB(x, y, rgb);
+            }
+        }
+
+        return resized;
+    }
+
+    private int bicubicInterpolate(int[][] kernel, double dx, double dy) {
+        double r = 0, g = 0, b = 0;
+
+        for (int ky = 0; ky < 4; ky++) {
+            for (int kx = 0; kx < 4; kx++) {
+                double wx = cubicWeight(dx - (kx - 1));
+                double wy = cubicWeight(dy - (ky - 1));
+                double weight = wx * wy;
+
+                int rgb = kernel[ky][kx];
+                r += ((rgb >> 16) & 0xFF) * weight;
+                g += ((rgb >> 8) & 0xFF) * weight;
+                b += (rgb & 0xFF) * weight;
+            }
+        }
+
+        r = Math.clamp(r, 0, 255);
+        g = Math.clamp(g, 0, 255);
+        b = Math.clamp(b, 0, 255);
+
+        return ((int)r << 16) | ((int)g << 8) | (int)b;
+    }
+
+    private double cubicWeight(double t) {
+        t = Math.abs(t);
+        if (t <= 1) {
+            return 1 - 2*t*t + t*t*t;
+        } else if (t < 2) {
+            return -4 + 8*t - 5*t*t + t*t*t;
+        } else {
+            return 0;
+        }
     }
 
     public static enum UploadType {

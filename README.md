@@ -80,8 +80,9 @@ First, run the following command to build the backend:
 ```bash
 .\mvnw clean package -Dnative "-Dquarkus.native.container-build=true"
 ```
-(Alternatively, if this fails and you have the code on a different drive, maybe try adding "-Dquarkus.native.remote-container-build=true".)
-Then, build the docker image:
+*(Alternatively, if this fails and you have the code on a different drive, maybe try adding "-Dquarkus.native.remote-container-build=true".)*
+
+<br>Then, build the docker image:
 ```bash
 docker build -f ./src/main/docker/Dockerfile.native -t arenauth-backend:latest .
 ```

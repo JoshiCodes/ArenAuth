@@ -32,7 +32,6 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.5.4",
-		"lucide-svelte": "^0.575.0",
 		"mode-watcher": "^1.1.0"
 	}
 }

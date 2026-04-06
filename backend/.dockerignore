@@ -1,4 +1,3 @@
-*
 !target/
 !target/*-runner
 !src/main/docker/Dockerfile.native

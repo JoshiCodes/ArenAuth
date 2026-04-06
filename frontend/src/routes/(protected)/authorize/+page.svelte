@@ -15,7 +15,7 @@
 
     let projectName: string;
     let avatarId: string|null = null;
-    $: projectImg = avatarId ? BACKEND_URL + "/api/avatar/project/" + avatarId + "?size=128" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.me.name));
+    $: projectImg = avatarId ? BACKEND_URL + "/api/v1/avatar/project/" + avatarId + "?size=128" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.me.name));
     let scopes: string[];
     let redirectUri: string;
     let projectCreated: string;

@@ -6,6 +6,7 @@
     import Link from "$lib/components/ui/Link.svelte";
     import { env } from "$env/dynamic/public";
     import {BACKEND_URL} from "$lib/vars";
+    import {goto} from "$app/navigation";
 
     const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
@@ -19,6 +20,10 @@
     $: me = (page.data.me as Me | null | undefined) ?? null;
 
     $: iconUrl = (me && me.avatarId) ? BACKEND_URL + "/api/v1/avatar/project/" + me.avatarId + "?size=512" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(me ? me.username : "Unknown User"));
+
+    async function handleLogout() {
+        await goto("/logout", { replaceState: true })
+    }
 
 </script>
 
@@ -38,11 +43,9 @@
                         Dashboard
                     </Button>
                 </a>
-                <a href="/logout">
-                    <Button variant="ghost">
-                        Logout
-                    </Button>
-                </a>
+                <Button variant="ghost" onClick={handleLogout}>
+                    Logout
+                </Button>
             </div>
         {:else}
             <ThemeToggle />

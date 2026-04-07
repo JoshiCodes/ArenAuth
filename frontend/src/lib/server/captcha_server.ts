@@ -1,5 +1,6 @@
 import {env} from "$env/dynamic/private";
-import {PUBLIC_USE_TURNSTILE_CAPTCHA} from "$env/static/public";
+import {env as publicEnv} from "$env/dynamic/public";
+
 
 interface TokenValidateResponse {
     'error-codes': string[];
@@ -36,7 +37,7 @@ export async function validateToken(token: string, secret: string) {
 
 export async function validateCaptcha(data: FormData) {
 
-    if(!PUBLIC_USE_TURNSTILE_CAPTCHA) return true; // Always true - no verification.
+    if(!publicEnv.PUBLIC_USE_TURNSTILE_CAPTCHA) return true; // Always true - no verification.
 
     const token = data.get('cf-turnstile-response') as string;
     if(!token) {

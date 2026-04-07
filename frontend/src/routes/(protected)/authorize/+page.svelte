@@ -6,54 +6,68 @@
     import {onMount} from "svelte";
     import {apiCall, fetchAvailableScopes} from "$lib/api";
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
+    import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import {BACKEND_URL} from "$lib/vars";
     import { env } from "$env/dynamic/public";
 
     const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
-    let req: string|null;
+    let { data } = $props();
 
-    let projectName: string;
-    let avatarId: string|null = null;
-    $: projectImg = avatarId ? BACKEND_URL + "/api/v1/avatar/project/" + avatarId + "?size=128" : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.me.name));
-    let scopes: string[];
-    let redirectUri: string;
-    let projectCreated: string;
+    let req = $state<string|null>(null);
+    let projectName = $state("Loading...");
+    let avatarId = $state<string|null>(null);
+    let scopes = $state<string[]>([]);
+    let redirectUri = $state("");
+    let projectCreated = $state("");
+    let availableScopes = $state<{name: string, description: string}[]>([]);
+    let isLoading = $state(true);
 
-
-    let availableScopes: [{name: string, description: string}]|[] = [];
+    const projectImg = $derived(
+        avatarId 
+            ? BACKEND_URL + "/api/v1/avatar/project/" + avatarId + "?size=256" 
+            : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(projectName))
+    );
 
     onMount(async () => {
         const urlParams = new URLSearchParams(window.location.search);
         req = urlParams.get("req");
 
-        apiCall("/oauth2/consent?req=" + req, {
-            method: "GET",
-            credentials: "include"
-        }).then(res => res.json()).then(data => {
-            if(!data.project || !data.project.name || !data.project.createdAt || !data.scope || !data.redirectUri) {
+        if (!req) {
+            goto("/dashboard?error=invalid_oauth_request");
+            return;
+        }
+
+        try {
+            const res = await apiCall("/oauth2/consent?req=" + req, {
+                method: "GET",
+                credentials: "include"
+            });
+            const consentData = await res.json();
+
+            if(!consentData.project || !consentData.project.name || !consentData.project.createdAt || !consentData.scope || !consentData.redirectUri) {
                 goto("/dashboard?error=invalid_oauth_request");
                 return;
             }
-            projectName = data.project.name;
-            scopes = (data.scope as string).split(" ");
-            redirectUri = data.redirectUri;
-            // Transform data.project.createdAt (Instant) to a human readable date
-            projectCreated = new Date(data.project.createdAt).toLocaleDateString("en-US", {
+
+            projectName = consentData.project.name;
+            scopes = (consentData.scope as string).split(" ");
+            redirectUri = consentData.redirectUri;
+            
+            projectCreated = new Date(consentData.project.createdAt).toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "long",
                 day: "numeric"
             });
-            avatarId = data.project.avatarId;
-            console.log(data);
-        }).catch(error => {
+            avatarId = consentData.project.avatarId;
+            isLoading = false;
+        } catch (error) {
+            console.error(error);
             goto("/dashboard?error=invalid_oauth_request");
-        });
+        }
+        
         availableScopes = await fetchAvailableScopes();
-
-    })
-
-    export let data;
+    });
 
     function continueAuth(authorised: boolean) {
         apiCall("/oauth2/authorize", {
@@ -62,18 +76,18 @@
                 req: req,
                 approved: authorised,
             })
-        }).then(res => res.json()).then(data => {
-            if(!data.redirectUri) {
+        }).then(res => res.json()).then(authData => {
+            if(!authData.redirectUri) {
                 let param = '';
-                if(data.error) {
-                    param = "&error=" + data.error;
+                if(authData.error) {
+                    param = "&error=" + authData.error;
                 }
                 goto("/dashboard?error=oauth_authorization_failed" + param);
                 return;
             }
-            window.location.href = data.redirectUri;
+            window.location.href = authData.redirectUri;
         }).catch(err => {
-            console.log(err);
+            console.error(err);
             goto("/dashboard?error=oauth_authorization_failed");
         });
     }
@@ -82,58 +96,103 @@
 
 <Navbar />
 <BackgroundBlobs />
+<BackgroundGrid />
 
-<div class="w-screen h-screen flex justify-center content-center items-center">
-    <div class="px-2 py-4 mx-2 dark:bg-zinc-950 rounded-lg">
-        <div class="flex flex-col justify-center content-center items-center px-4">
-            <div class="mt-2">
-                <img src={projectImg} alt={"Project Logo"} class="w-[128px] rounded-xl object-cover shadow-lg" />
+<div class="min-h-[calc(100vh-64px)] flex items-center justify-center mt-6 md:mt-12 p-4">
+    <div class="w-full max-w-xl bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        
+        <!-- Header / Identity -->
+        <div class="p-8 pb-4 text-center">
+            <div class="relative inline-block group mb-6">
+                <div class="absolute inset-0 rounded-2xl bg-violet-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <img 
+                    src={projectImg} 
+                    alt={projectName} 
+                    class="relative w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover shadow-xl border-4 border-white dark:border-zinc-800 transition-transform duration-500 group-hover:scale-105" 
+                />
             </div>
-            <span class="text-xl font-bold mt-2">{projectName}</span>
-            <span class="mb-2">wants to access your <b>Aren</b> account.</span>
-            <span class="text-sm dark:text-zinc-100/50">Signed in as <span class="font-semibold">{data.me.username}</span>. <Link href="/logout">Not you?</Link></span>
-        </div>
-        <div class="dark:bg-zinc-800 mx-4 pt-2 md:pt-4 rounded-lg mt-4">
-            <div class="w-4/5 mx-auto mt-2 dark:text-zinc-400">
-                <span>This will allow the developer of <b>{projectName}</b> to:</span>
-                <div class="mt-4 flex flex-col gap-y-2">
-                    {#each scopes as scope}
-                        <div class="flex flex-row justify-start content-center items-center px-4 gap-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
-                            </svg>
-                            <span>{availableScopes.find(s => s.name === scope)?.description || 'Unknown Scope!'}</span>
-                        </div>
-                    {/each}
-                </div>
-            </div>
-            <hr class="mx-4 md:mx-8 my-4 text-zinc-300 dark:text-zinc-700" />
-            <div class="w-4/5 mx-auto my-4 pb-2 md:pb-4 dark:text-zinc-400 text-sm">
-                <div class="mt-4 flex flex-col gap-y-2">
-                    <div class="flex flex-row justify-start content-center items-center px-4 gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-                            <path fill-rule="evenodd" d="M19.902 4.098a3.75 3.75 0 0 0-5.304 0l-4.5 4.5a3.75 3.75 0 0 0 1.035 6.037.75.75 0 0 1-.646 1.353 5.25 5.25 0 0 1-1.449-8.45l4.5-4.5a5.25 5.25 0 1 1 7.424 7.424l-1.757 1.757a.75.75 0 1 1-1.06-1.06l1.757-1.757a3.75 3.75 0 0 0 0-5.304Zm-7.389 4.267a.75.75 0 0 1 1-.353 5.25 5.25 0 0 1 1.449 8.45l-4.5 4.5a5.25 5.25 0 1 1-7.424-7.424l1.757-1.757a.75.75 0 1 1 1.06 1.06l-1.757 1.757a3.75 3.75 0 1 0 5.304 5.304l4.5-4.5a3.75 3.75 0 0 0-1.035-6.037.75.75 0 0 1-.354-1Z" clip-rule="evenodd" />
-                        </svg>
-                        <span>After you authorize, you will be redirected <b>outside Aren</b> to <b>{redirectUri}</b></span>
-                    </div>
-                </div>
-                <div class="mt-4 flex flex-col gap-y-2">
-                    <div class="flex flex-row justify-start content-center items-center px-4 gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
-                        </svg>
-                        <span>Active since <b>{projectCreated}</b></span>
-                    </div>
-                </div>
+            
+            <h1 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight mb-2">
+                Authorize <span class="text-violet-600 dark:text-violet-400">{projectName}</span>
+            </h1>
+            <p class="text-zinc-600 dark:text-zinc-400">
+                wants to access your <span class="font-bold text-zinc-900 dark:text-white">Aren</span> account
+            </p>
+            
+            <div class="mt-4 flex items-center justify-center gap-2 text-sm">
+                <span class="text-zinc-500">Signed in as</span>
+                <span class="font-semibold text-zinc-900 dark:text-white">{data.me.username}</span>
+                <span class="text-zinc-300 dark:text-zinc-700">•</span>
+                <Link href="/logout" class="text-violet-600 dark:text-violet-400 hover:underline">Not you?</Link>
             </div>
         </div>
-        <div class="flex flex-row justify-center content-center items-center px-4 gap-x-2">
-            <Button variant="ghost" class="w-1/3" onClick={() => continueAuth(false)}>
-                Cancel
-            </Button>
-            <Button class="w-1/3"  onClick={() => continueAuth(true)}>
-                Authorize
-            </Button>
+
+        {#if isLoading}
+            <div class="p-12 flex flex-col items-center justify-center gap-4 text-zinc-500">
+                <div class="w-10 h-10 border-4 border-violet-500/30 border-t-violet-600 rounded-full animate-spin"></div>
+                <p class="animate-pulse">Loading request details...</p>
+            </div>
+        {:else}
+            <!-- Content Area -->
+            <div class="px-8 py-4 space-y-6">
+                <!-- Scopes Section -->
+                <div class="bg-zinc-50/50 dark:bg-zinc-950/30 rounded-2xl p-6 border border-zinc-200/50 dark:border-zinc-800/50">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">The developer will be able to:</h2>
+                    <div class="space-y-4">
+                        {#each scopes as scope}
+                            <div class="flex items-start gap-3 group">
+                                <div class="mt-0.5 p-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{scope}</span>
+                                    <span class="text-xs text-zinc-500 dark:text-zinc-400 italic">
+                                        {availableScopes.find(s => s.name === scope)?.description || 'No description available for this scope.'}
+                                    </span>
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+
+                <!-- Footer Metadata -->
+                <div class="px-2 space-y-3">
+                    <div class="flex items-start gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4 mt-0.5 shrink-0 opacity-60">
+                            <path fill-rule="evenodd" d="M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M7.768 15.768a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 0 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3Z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="leading-tight">
+                            After authorization, you will be redirected to: <br>
+                            <span class="font-mono text-xs bg-zinc-100 dark:bg-zinc-800 px-1 rounded select-all break-all">{redirectUri}</span>
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4 opacity-60">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Project active since {projectCreated}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="p-8 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button variant="ghost" class="w-full h-12 rounded-2xl" onClick={() => continueAuth(false)}>
+                    Cancel
+                </Button>
+                <Button variant="primary" class="w-full h-12 rounded-2xl shadow-lg shadow-violet-500/20" onClick={() => continueAuth(true)}>
+                    Authorize
+                </Button>
+            </div>
+        {/if}
+        
+        <!-- Safety Footer -->
+        <div class="px-8 py-4 bg-zinc-100/50 dark:bg-zinc-800/30 border-t border-zinc-200/50 dark:border-zinc-800/50 text-sm text-center text-zinc-500 italic">
+            Make sure you trust the developer of <b>{projectName}</b> before authorizing access to your data.
         </div>
     </div>
 </div>

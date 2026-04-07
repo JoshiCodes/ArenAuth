@@ -28,6 +28,9 @@ public class AuthResource {
     @ConfigProperty(name = "aren.use_https", defaultValue = "false")
     boolean isSecure;
 
+    @ConfigProperty(name = "aren.signup.disabled", defaultValue = "false")
+    boolean signUpDisabled;
+
     @ConfigProperty(name = "aren.cookie-domain")
     String cookieDomain;
 
@@ -80,6 +83,10 @@ public class AuthResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response register(RegisterRequest dto) {
+
+        if(signUpDisabled) {
+            return Response.status(403).entity(Map.of("error", "Sign up is disabled.")).build();
+        }
 
         final String username = dto.username();
         final String email = dto.email();

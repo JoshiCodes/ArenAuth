@@ -36,6 +36,7 @@ services:
       COOKIE_DOMAIN: ${COOKIE_DOMAIN}
 
       JWT_ISSUER: ${BACKEND_URL}
+      DISABLE_SIGNUP: ${DISABLE_SIGNUP:-false}
     ports:
       - "8080:8080"
     networks:
@@ -62,6 +63,12 @@ services:
       PUBLIC_BACKEND_URL: ${BACKEND_URL}
       INTERNAL_BACKEND_URL: ${INTERNAL_BACKEND_URL}
       PUBLIC_FALLBACK_IMG_URL: https://ui-avatars.com/api/?background=893DC3FF&color=fff&name=%name%
+
+      PUBLIC_USE_TURNSTILE_CAPTCHA: ${PUBLIC_USE_TURNSTILE_CAPTCHA:-false}
+      PUBLIC_TURNSTILE_SITE_KEY: ${PUBLIC_TURNSTILE_SITE_KEY}
+      SECRET_TURNSTILE_KEY: ${SECRET_TURNSTILE_KEY}
+
+      PUBLIC_DISABLE_SIGNUP: ${DISABLE_SIGNUP:-false}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s

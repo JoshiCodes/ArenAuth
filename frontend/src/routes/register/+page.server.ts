@@ -4,12 +4,21 @@ import type { Actions } from './$types';
 import {TURNSTILE_ENABLED} from "$lib/captcha";
 import {validateCaptcha} from "$lib/server/captcha_server";
 import {applyBackendCookie} from "$lib/server/cookies";
+import {env} from "$env/dynamic/public";
 
 function sanitizeReturnTo(value: string | null): string {
     if (!value || !value.startsWith('/') || value.startsWith('//') || value.includes('\\')) {
         return '/dashboard';
     }
     return value;
+}
+
+export const load = async ({ fetch, url, depends, cookies }) => {
+
+    if(env.PUBLIC_DISABLE_SIGNUP) {
+        throw redirect(303, `/?error=signup_disabled`);
+    }
+
 }
 
 export const actions: Actions = {

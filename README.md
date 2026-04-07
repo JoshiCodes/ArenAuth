@@ -56,6 +56,7 @@ The most important variables to change are:
 - `INTERNAL_BACKEND_URL`: The backend url used internally by the backend (with http://) | I do recommend setting this to the same as BACKEND_URL or something like 'backend:8080' (if using docker).
 - `COOKIE_DOMAIN`: Your domain (without https:// or http://) | This is used for setting the cookie domain, so make sure to set this correctly.
 - `USE_HTTPS`: Whether or not you plan on using https. | This is used for setting the cookie.
+Have a look at the .env.docker file to see all the available environment variables.
 
 I do recommend setting the FRONTEND_URL to something like `https://auth.yourdomain.tld` and BACKEND_URL and INTERNAL_BACKEND_URL to the same. 
 In this case, you will need to set the `COOKIE_DOMAIN` to `auth.yourdomain.tld` and `USE_HTTPS` to `true`.

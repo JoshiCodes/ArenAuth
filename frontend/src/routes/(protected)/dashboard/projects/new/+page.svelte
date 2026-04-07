@@ -99,7 +99,6 @@
         <div class="mt-6 grid grid-cols-2 w-2/3">
             <FloatingInput id="name" label="Project name" required bind:value={name} class="col-span-1 row-span-1" />
             <div class="col-span-1 row-span-2 flex flex-col gap-y-4 justify-center content-center items-center">
-                <!-- TODO -->
                 <img src={imagePreview || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", (name || "New Project"))}
                      alt="Project icon"
                      class="mt-2 md:mt-4 w-1/3 object-cover rounded-lg" />

@@ -9,8 +9,6 @@ export const load = async ({ fetch, url, depends, cookies }) => {
         .map((c) => `${c.name}=${c.value}`)
         .join('; ');
 
-    console.log('(SSR) outgoing cookieHeader:', cookieHeader);
-
     const res = await fetch(INTERNAL_BACKEND_URL + '/api/v1/internal/me', {
         credentials: 'include',
         headers: {

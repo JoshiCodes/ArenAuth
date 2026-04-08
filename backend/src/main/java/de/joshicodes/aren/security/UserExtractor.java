@@ -13,7 +13,6 @@ public class UserExtractor {
         }
 
         Object raw = identity.getAttribute("userId");
-        System.out.println("Raw userId: " + raw);
         if (raw == null) return null;
 
         UUID userId;

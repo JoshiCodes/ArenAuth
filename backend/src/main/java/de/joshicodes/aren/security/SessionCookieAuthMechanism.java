@@ -27,15 +27,12 @@ public class SessionCookieAuthMechanism implements HttpAuthenticationMechanism {
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
         final Cookie cookie = context.request().getCookie(COOKIE_NAME);
-        System.out.println("Auth Cookie: " + cookie);
         if(cookie == null || cookie.getValue() == null || cookie.getValue().isBlank()) {
             return Uni.createFrom().nullItem();
         }
-        System.out.println(cookie.getName() + " = " + cookie.getValue());
 
         return Uni.createFrom().optional(() -> sessionService.getSession(cookie.getValue()))
                 .onItem().ifNotNull().transform(session -> {
-                    System.out.println("Authenticated session: " + session);
                     return QuarkusSecurityIdentity.builder()
                             .setPrincipal((Principal) session::username)
                             .addAttribute("userId", session.userId())

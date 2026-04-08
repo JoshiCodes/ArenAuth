@@ -52,14 +52,11 @@ public class UploadService {
     public String uploadFile(final UploadType uploadType, final InputStream inputStream,
                              final String mimeType, final String fileName) throws IOException {
 
-        System.out.println(uploadType + " : " + fileName + " : " + mimeType);
-
         if(UPLOAD_DIR == null) {
             return null;
         }
 
         if (!isAllowedMimeType(mimeType)) {
-            System.out.println(mimeType);
             throw new IllegalArgumentException(
                     "MIME-Type not allowed: " + mimeType +
                             ". Allowed types: " + String.join(", ", ALLOWED_MIME_TYPES)
@@ -73,7 +70,6 @@ public class UploadService {
 
         String fileExtension = getFileExtension(mimeType);
         if(fileExtension == null) {
-            System.out.println(fileExtension);
             throw new IllegalArgumentException(
                     "Invalid file extension!"
             );

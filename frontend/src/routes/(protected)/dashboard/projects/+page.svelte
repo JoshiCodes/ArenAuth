@@ -20,7 +20,6 @@
         fetch(BACKEND_URL + "/api/v1/internal/projects", {credentials: 'include'})
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 projects = data;
                 loading = false;
             });

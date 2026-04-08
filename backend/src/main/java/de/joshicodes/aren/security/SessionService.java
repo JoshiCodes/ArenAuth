@@ -34,7 +34,6 @@ public class SessionService {
         final String id = newId();
         final Session s = new Session(id, user.username, user.id, user.roles, Instant.now().plus(TTL));
         sessions.put(id, s);
-        System.out.println("Created session: " + id);
         return s;
     }
 

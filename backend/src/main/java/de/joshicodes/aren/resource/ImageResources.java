@@ -171,7 +171,6 @@ public class ImageResources {
     public Response uploadProjectAvatar(@PathParam("id") String projectId, @FormParam("file") FileUpload file) {
         try {
 
-            System.out.println(1);
             UUID userId = identity.getAttribute("userId");
             final User user = User.findById(userId);
 
@@ -236,12 +235,12 @@ public class ImageResources {
                         .build();
             }
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
                     .entity(Map.of("error", e.getMessage()))
                     .build();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(Map.of("error", "Upload failed."))
                     .build();

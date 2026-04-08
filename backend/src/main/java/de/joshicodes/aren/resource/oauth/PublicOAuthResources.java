@@ -186,7 +186,6 @@ public class PublicOAuthResources {
 
         final Project project = Project.findById(projectId);
 
-        System.out.println(clientSecret);
         if(project == null || !project.verifySecret(clientSecret)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", "invalid_client_secret")).build();
         }

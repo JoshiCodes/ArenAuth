@@ -1,9 +1,8 @@
 ---
 name: Bug Report
 about: Create a report to help us improve
-title: "[BUG] <title>"
+title: "[BUG] title here"
 labels: bug
-assignees: JoshiCodes
 
 ---
 
@@ -24,7 +23,7 @@ assignees: JoshiCodes
 *A clear and concise description of what the bug is.*
 >
 
-**To Reproduce**
+**To Reproduce** (optional, but helpful / in some cases required)
 *Steps to reproduce the behavior:*
 1. ...
 2. ...
@@ -33,11 +32,11 @@ assignees: JoshiCodes
 *A clear and concise description of what you expected to happen.*
 > 
 
-**Screenshots** (optional)
+**Screenshots** (optional / remove if not applicable)
 *If applicable, add screenshots to help explain your problem.*
 >
 
 **Additional context** (optional)
 *Add any other context about the problem here.*
 
-[ ] **I hereby confirm that this is a real bug and not caused by wrong usage. I have searched currently opened and already closed issues and searched the Documentation for this bug. If this bug is not specific to this application (e.g. quarkus error), I have already searched for a possible solution and also mentioned said solution in this issue.** (required)
+- [ ] **I hereby confirm that this is a real bug and not caused by wrong usage. I have searched currently opened and already closed issues and searched the Documentation for this bug. If this bug is not specific to this application (e.g. quarkus error), I have already searched for a possible solution and also mentioned said solution in this issue.** (required)

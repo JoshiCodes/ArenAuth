@@ -22,9 +22,9 @@
         'transition-all duration-300 ease-in-out';
 
     const sizes: Record<typeof size, string> = {
-        sm: 'h-8 px-3 text-sm',
-        md: 'h-10 px-4 text-sm',
-        lg: 'h-12 px-5 text-base'
+        sm: 'h-8 px-3 py-2 text-sm',
+        md: 'h-10 px-4 py-2 text-sm',
+        lg: 'h-12 px-5 py-2 text-base'
     };
 
     const variants: Record<typeof variant, string> = {

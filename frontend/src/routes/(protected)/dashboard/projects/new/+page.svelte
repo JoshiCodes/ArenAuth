@@ -5,19 +5,20 @@
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import {BACKEND_URL} from "$lib/vars";
-    import { env } from "$env/dynamic/public";
+    import {env} from "$env/dynamic/public";
     import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
 
     const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
-    let name: string = "";
-    let description: string = "";
-    let image: File|null = null;
-    let imagePreview: string|null = null;
+    let sidebarOpen = $state(false);
+    let name = $state("");
+    let description = $state("");
+    let image = $state<File|null>(null);
+    let imagePreview = $state<string|null>(null);
     let fileInput: HTMLInputElement;
 
-    $: canSubmit = name.length >= 3;
+    const canSubmit = $derived(name.length >= 3);
 
-    let error: string|null = null;
+    let error = $state<string|null>(null);
 
     function submit(): void {
         if(!canSubmit) return;
@@ -84,8 +85,8 @@
 </script>
 
 <BackgroundBlob class="top-32 right-6 w-125 h-32 rounded-lg" />
-<Navbar />
-<DashboardSidebar />
+<Navbar bind:sidebarOpen />
+<DashboardSidebar bind:open={sidebarOpen} />
 
 <DashboardComponent>
     <div class="mt-6 w-full h-full">
@@ -98,16 +99,16 @@
         <div class="mt-6 grid grid-cols-2 w-2/3">
             <FloatingInput id="name" label="Project name" required bind:value={name} class="col-span-1 row-span-1" />
             <div class="col-span-1 row-span-2 flex flex-col gap-y-4 justify-center content-center items-center">
-                <img src={imagePreview || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", (name || "New Project"))}
-                     alt="Project icon"
-                     class="mt-2 md:mt-4 w-1/3 object-cover rounded-lg" />
-                <input
-                    type="file"
-                    bind:this={fileInput}
-                    accept="image/*"
-                    on:change={handleFileSelect}
-                    class="hidden"
-                />
+                    <img src={imagePreview || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", (name || "New Project"))}
+                         alt="Project icon"
+                         class="mt-2 md:mt-4 w-1/3 object-cover rounded-lg" />
+                    <input
+                        type="file"
+                        bind:this={fileInput}
+                        accept="image/*"
+                        onchange={handleFileSelect}
+                        class="hidden"
+                    />
                 <div class="flex gap-2">
                     <Button variant="secondary" onClick={triggerFileInput}>
                         Upload Image

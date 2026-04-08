@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { page } from "$app/state";
+    import {page} from "$app/state";
     import Navbar from "$lib/components/Navbar.svelte";
     import DashboardSidebar from "$lib/components/dashboard/DashboardSidebar.svelte";
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
-    import { onMount } from "svelte";
+    import {onMount} from "svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import BottomNotification from "$lib/components/ui/BottomNotification.svelte";
-    import { BACKEND_URL } from "$lib/vars";
-    import { env } from "$env/dynamic/public";
+    import {BACKEND_URL} from "$lib/vars";
+    import {env} from "$env/dynamic/public";
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
 
@@ -28,6 +28,7 @@
     let iconUrl = $state("");
     let username = $state("");
     let isChanged = $state(false);
+    let sidebarOpen = $state(false);
 
     onMount(() => {
         realIconUrl = (me && me.avatarId) ? BACKEND_URL + "/api/v1/avatar/project/" + me.avatarId + "?size=512" : defaultIconUrl;
@@ -77,8 +78,8 @@
 <BackgroundBlobs />
 <BackgroundGrid />
 
-<Navbar />
-<DashboardSidebar />
+<Navbar bind:sidebarOpen />
+<DashboardSidebar bind:open={sidebarOpen} />
 
 <DashboardComponent>
     <div class="max-w-[90%]">

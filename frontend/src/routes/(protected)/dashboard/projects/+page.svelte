@@ -12,8 +12,9 @@
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
 
-    let loading = true;
-    let projects: { name: string, id: string, avatarId: string }[] = [];
+    let sidebarOpen = $state(false);
+    let loading = $state(true);
+    let projects: { name: string, id: string, avatarId: string }[] = $state([]);
 
     onMount(() => {
 
@@ -31,8 +32,8 @@
 <BackgroundBlobs />
 <BackgroundGrid />
 
-<Navbar />
-<DashboardSidebar />
+<Navbar bind:sidebarOpen />
+<DashboardSidebar bind:open={sidebarOpen} />
 
 <BackgroundBlob class="top-32 right-6 w-125 h-32 rounded-lg" />
 

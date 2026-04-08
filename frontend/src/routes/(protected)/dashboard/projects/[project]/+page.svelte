@@ -1,24 +1,25 @@
 <script lang="ts">
-    import { page } from "$app/state";
+    import {page} from "$app/state";
     import Navbar from "$lib/components/Navbar.svelte";
     import DashboardSidebar from "$lib/components/dashboard/DashboardSidebar.svelte";
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
     import Link from "$lib/components/ui/Link.svelte";
-    import { onMount } from "svelte";
-    import { apiCall } from "$lib/api";
+    import {onMount} from "svelte";
+    import {apiCall} from "$lib/api";
     import Button from "$lib/components/ui/Button.svelte";
     import BarInput from "$lib/components/ui/forms/BarInput.svelte";
     import Modal from "$lib/components/Modal.svelte";
     import CheckInput from "$lib/components/ui/forms/CheckInput.svelte";
     import BarSelect from "$lib/components/ui/forms/BarSelect.svelte";
-    import { toastStore } from "$lib/components/toasts/toastStore";
-    import { BACKEND_URL } from "$lib/vars";
-    import { env } from "$env/dynamic/public";
+    import {toastStore} from "$lib/components/toasts/toastStore";
+    import {BACKEND_URL} from "$lib/vars";
+    import {env} from "$env/dynamic/public";
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
 
     const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
 
+    let sidebarOpen = $state(false);
     let fileInput: HTMLInputElement | undefined = $state();
 
     const projectId = $derived(String(page.params.project));
@@ -193,8 +194,8 @@
 
 <BackgroundBlobs />
 <BackgroundGrid />
-<Navbar />
-<DashboardSidebar />
+<Navbar bind:sidebarOpen />
+<DashboardSidebar bind:open={sidebarOpen} />
 
 <Modal id="reset-token-modal" title="Reset Client Secret" bind:visible={resetModalShown}>
     <p class="text-zinc-600 dark:text-zinc-400">

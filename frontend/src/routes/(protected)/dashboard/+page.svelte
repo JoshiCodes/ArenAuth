@@ -5,13 +5,15 @@
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import Button from "$lib/components/ui/Button.svelte";
-    import { onMount } from "svelte";
-    import { apiCall } from "$lib/api";
+    import {onMount} from "svelte";
+    import {apiCall} from "$lib/api";
     import ProjectCard from "$lib/components/dashboard/ProjectCard.svelte";
     import ProjectCardSkeleton from "$lib/components/dashboard/ProjectCardSkeleton.svelte";
     import InfoCard from "$lib/components/ui/InfoCard.svelte";
 
     let { data } = $props();
+
+    let sidebarOpen = $state(false);
 
     let projects = $state([]);
     let isLoadingProjects = $state(true);
@@ -30,8 +32,8 @@
 <BackgroundBlobs />
 <BackgroundGrid />
 
-<Navbar />
-<DashboardSidebar />
+<Navbar bind:sidebarOpen />
+<DashboardSidebar bind:open={sidebarOpen} />
 
 <DashboardComponent>
     <div class="max-w-6xl mx-auto space-y-10">

@@ -213,7 +213,7 @@
 </Modal>
 
 <DashboardComponent>
-    <div class="max-w-[90%]">
+    <div class="max-w-full sm:max-w-[90%]">
         <header class="mb-8">
             <Link href="/dashboard/projects" class="text-sm flex items-center gap-1 mb-4 opacity-70 hover:opacity-100 transition-opacity">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">

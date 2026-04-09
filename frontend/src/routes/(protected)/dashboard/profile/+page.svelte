@@ -82,7 +82,7 @@
 <DashboardSidebar bind:open={sidebarOpen} />
 
 <DashboardComponent>
-    <div class="max-w-[90%]">
+    <div class="max-w-full sm:max-w-[90%]">
         <header class="mb-8">
             <h1 class="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">User Settings</h1>
             <p class="text-zinc-500 dark:text-zinc-400 mt-2">Manage your profile and account preferences.</p>

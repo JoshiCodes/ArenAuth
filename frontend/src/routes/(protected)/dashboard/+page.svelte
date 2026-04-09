@@ -42,7 +42,7 @@
             <div class="absolute inset-0 bg-gradient-to-br from-violet-200/70 to-fuchsia-200/70 dark:from-violet-500/25 dark:to-fuchsia-500/25"></div>
             <div class="relative z-10">
                 <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-4">
-                    Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400">{data.me.username}</span>!
+                    Welcome back, <span class="text-transparent bg-clip-text bg-linear-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400">{data.me.username}</span>!
                 </h1>
                 <p class="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl">
                     Great to see you again. Here's a quick overview of your authentication universe. Manage your projects, monitor security, and scale your applications.

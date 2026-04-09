@@ -2,6 +2,7 @@ package de.joshicodes.aren.resource.internal;
 
 import de.joshicodes.aren.entities.User;
 import de.joshicodes.aren.entities.dto.UserDTO;
+import io.quarkus.panache.common.Sort;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -22,7 +23,7 @@ public class AdminResources {
         if(page == null) page = 0;
         if(size == null) size = 10;
 
-        List<User> pageOfUsers = User.findAll().page(page, size).list();
+        List<User> pageOfUsers = User.findAll(Sort.by("id")).page(page, size).list();
 
         List<UserDTO> users = pageOfUsers.stream()
                 .map(u -> UserDTO.from(u, true))

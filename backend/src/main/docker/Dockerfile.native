@@ -18,7 +18,7 @@
 ###
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7
 
-RUN microdnf install -y freetype fontconfig expat devjavu-sans-fonts && microdnf clean all
+RUN microdnf install -y freetype fontconfig expat dejavu-sans-fonts && microdnf clean all
 
 WORKDIR /work/
 RUN chown 1001 /work \

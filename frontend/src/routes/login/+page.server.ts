@@ -1,7 +1,7 @@
-import { BACKEND_URL } from '$lib/vars';
-import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
-import {applyBackendCookie, parseSetCookie} from "$lib/server/cookies";
+import {BACKEND_URL} from '$lib/vars';
+import {fail, redirect} from '@sveltejs/kit';
+import type {Actions} from './$types';
+import {applyBackendCookie} from "$lib/server/cookies";
 
 function sanitizeReturnTo(value: string | null): string {
     if (!value || !value.startsWith('/') || value.startsWith('//') || value.includes('\\')) {
@@ -11,7 +11,7 @@ function sanitizeReturnTo(value: string | null): string {
 }
 
 export const actions: Actions = {
-    default: async({cookies, request}) => {
+    default: async({cookies, request, url}) => {
         const data = await request.formData();
         const username = data.get('username');
         const password = data.get('password');
@@ -41,18 +41,14 @@ export const actions: Actions = {
                 applyBackendCookie(sessionCookie, cookies);
             }
 
-            const redirectTarget = sanitizeReturnTo((data.get('returnTo') as string | null) ?? "/dashboard");
-            redirect(303, redirectTarget);
-
         } catch (error: any) {
-
-            if (error?.status === 303) {
-                throw error;
-            }
 
             console.error('Error connecting to the backend:', error);
             return fail(500, { error: 'Failed to connect to the server.' });
         }
+
+        const redirectTarget = sanitizeReturnTo((url.searchParams.get('returnTo') as string | null) ?? "/dashboard");
+        throw redirect(303, redirectTarget);
 
     }
 };

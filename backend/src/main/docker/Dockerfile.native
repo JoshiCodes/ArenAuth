@@ -37,6 +37,6 @@ ENV UPLOAD_DIR=/opt/aren/uploads
 EXPOSE 8080
 USER 1001
 
-ENV JAVA_OPTIONS=""
+ENV JAVA_OPTIONS="-Dsun.font.layout.ffm=false"
 
 ENTRYPOINT ["/bin/sh", "-c", "exec ./application $JAVA_OPTIONS -Dquarkus.http.host=0.0.0.0"]

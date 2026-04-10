@@ -7,6 +7,36 @@
           "long"
         ],
         "returnType": "long"
+      },
+      {
+        "parameterTypes": [
+          "long",
+          "long",
+          "long",
+          "long",
+          "long"
+        ],
+        "returnType": "long"
+      },
+      {
+        "parameterTypes": [
+          "long",
+          "long",
+          "long"
+        ],
+        "returnType": "void"
+      }
+    ],
+    "upcalls": [
+      {
+        "parameterTypes": [
+          "long",
+          "int",
+          "int",
+          "long",
+          "long"
+        ],
+        "returnType": "void"
       }
     ]
   }

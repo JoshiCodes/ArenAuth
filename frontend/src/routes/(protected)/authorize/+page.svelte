@@ -7,15 +7,12 @@
     import {apiCall, fetchAvailableScopes} from "$lib/api";
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
-    import {BACKEND_URL} from "$lib/vars";
-    import { env } from "$env/dynamic/public";
-
-    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
+    import {projectAvatarUrl} from "$lib/avatar";
 
     let { data } = $props();
 
     let req = $state<string|null>(null);
-    let projectName = $state("Loading...");
+    let projectName = $state(null);
     let avatarId = $state<string|null>(null);
     let scopes = $state<string[]>([]);
     let redirectUri = $state("");
@@ -23,11 +20,7 @@
     let availableScopes = $state<{name: string, description: string}[]>([]);
     let isLoading = $state(true);
 
-    const projectImg = $derived(
-        avatarId 
-            ? BACKEND_URL + "/api/v1/avatar/project/" + avatarId + "?size=256" 
-            : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(projectName))
-    );
+    let projectImg: string|null = $state(null);
 
     onMount(async () => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -61,6 +54,7 @@
             });
             avatarId = consentData.project.avatarId;
             isLoading = false;
+            projectImg = projectAvatarUrl(avatarId, projectName);
         } catch (error) {
             console.error(error);
             goto("/dashboard?error=invalid_oauth_request");

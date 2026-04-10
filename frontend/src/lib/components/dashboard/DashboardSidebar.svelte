@@ -46,7 +46,7 @@
 
 <Sidebar bind:open>
   <div class="flex flex-col gap-y-1">
-    <SidebarItem href="/dashboard" icon={homeIcon} onClick={close}>Home</SidebarItem>
+    <SidebarItem href="/dashboard" exact={true} icon={homeIcon} onClick={close}>Home</SidebarItem>
     <SidebarItem href="/dashboard/projects" icon={projectsIcon} onClick={close}>Projects</SidebarItem>
   </div>
 

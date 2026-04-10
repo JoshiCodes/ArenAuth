@@ -1,8 +1,9 @@
 <script lang="ts">
-  import {page} from '$app/state';
+    import {page} from '$app/state';
 
-  interface Props {
+    interface Props {
     href: string;
+    exact?: boolean;
     icon?: import('svelte').Snippet;
     children?: import('svelte').Snippet;
     onClick?: () => void;
@@ -10,14 +11,15 @@
     activeClass?: string;
   }
 
-  let { href, icon, children, onClick, class: className, activeClass }: Props = $props();
+  let { href, exact = false, icon, children, onClick, class: className, activeClass }: Props = $props();
 
   function isActive(href: string) {
     const path = page.url.pathname;
-    if (href === '/dashboard') {
-      return path === '/dashboard';
-    }
-    return path.startsWith(href);
+    if(path === href) return true;
+
+    if(exact) return path === href;
+
+    return path.startsWith(href + "/");
   }
 
   const active = $derived(isActive(href));

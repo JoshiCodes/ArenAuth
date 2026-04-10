@@ -62,7 +62,6 @@ services:
     environment:
       PUBLIC_BACKEND_URL: ${BACKEND_URL}
       INTERNAL_BACKEND_URL: ${INTERNAL_BACKEND_URL}
-      PUBLIC_FALLBACK_IMG_URL: https://ui-avatars.com/api/?background=893DC3FF&color=fff&name=%name%
 
       PUBLIC_USE_TURNSTILE_CAPTCHA: ${PUBLIC_USE_TURNSTILE_CAPTCHA:-false}
       PUBLIC_TURNSTILE_SITE_KEY: ${PUBLIC_TURNSTILE_SITE_KEY}

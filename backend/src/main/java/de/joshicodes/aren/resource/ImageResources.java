@@ -247,6 +247,34 @@ public class ImageResources {
         }
     }
 
+    @GET
+    @Path("/default/{name}")
+    public Response getDefaultAvatar(@PathParam("name") String name, @QueryParam("size") Integer size) {
+
+        if(name == null || name.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        size = toValidSize(size);
+
+        try {
+            final Pair<byte[], String> response = uploadService.getInitialAvatar(name, size);
+
+            if(response == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            return Response.ok(response.getLeft())
+                    .type(response.getRight())
+                    .cacheControl(RuntimeDelegate.getInstance().createHeaderDelegate(CacheControl.class).fromString("max-age=3600, public"))
+                    .build();
+        } catch (IOException e) {
+            LOG.error("Failure while fetching default avatar! ", e);
+            throw new RuntimeException("Failed to get avatar");
+        }
+
+    }
+
     @RegisterForReflection
     public static record ImageResponseDTO(UploadService.UploadType type, String avatarId) {
 

@@ -7,22 +7,13 @@
     import {onMount} from "svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import BottomNotification from "$lib/components/ui/BottomNotification.svelte";
-    import {BACKEND_URL} from "$lib/vars";
-    import {env} from "$env/dynamic/public";
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
-
-    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
-
-    type Me = {
-        username: string;
-        userId: string;
-        roles: string[];
-        avatarId: string | null;
-    };
+    import {userAvatarUrl} from "$lib/avatar";
 
     const me = $derived((page.data.me as Me | null | undefined) ?? null);
-    const defaultIconUrl = $derived(PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(me ? me.username : "Unknown User")));
+
+    const defaultIconUrl = $derived(userAvatarUrl(me?.avatarId ?? null, me?.username ?? "Unknown User"));
     
     let realIconUrl = $state("");
     let iconUrl = $state("");
@@ -31,7 +22,7 @@
     let sidebarOpen = $state(false);
 
     onMount(() => {
-        realIconUrl = (me && me.avatarId) ? BACKEND_URL + "/api/v1/avatar/project/" + me.avatarId + "?size=512" : defaultIconUrl;
+        realIconUrl = userAvatarUrl(me?.avatarId ?? null, me?.username ?? "Unknown User");
         iconUrl = realIconUrl;
         username = me?.username ?? "";
     });

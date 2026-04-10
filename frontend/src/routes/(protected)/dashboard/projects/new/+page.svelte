@@ -5,10 +5,9 @@
     import FloatingInput from "$lib/components/ui/forms/FloatingInput.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import {BACKEND_URL} from "$lib/vars";
-    import {env} from "$env/dynamic/public";
     import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
+    import {projectAvatarUrl} from "$lib/avatar";
 
-    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
     let sidebarOpen = $state(false);
     let name = $state("");
     let description = $state("");
@@ -99,7 +98,7 @@
         <div class="mt-6 grid grid-cols-2 w-2/3">
             <FloatingInput id="name" label="Project name" required bind:value={name} class="col-span-1 row-span-1" />
             <div class="col-span-1 row-span-2 flex flex-col gap-y-4 justify-center content-center items-center">
-                    <img src={imagePreview || PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", (name || "New Project"))}
+                    <img src={imagePreview || projectAvatarUrl(null, name)}
                          alt="Project icon"
                          class="mt-2 md:mt-4 w-1/3 object-cover rounded-lg" />
                     <input

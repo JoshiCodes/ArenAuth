@@ -13,11 +13,9 @@
     import BarSelect from "$lib/components/ui/forms/BarSelect.svelte";
     import {toastStore} from "$lib/components/toasts/toastStore";
     import {BACKEND_URL} from "$lib/vars";
-    import {env} from "$env/dynamic/public";
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
-
-    const PUBLIC_FALLBACK_IMG_URL = env.PUBLIC_FALLBACK_IMG_URL;
+    import {projectAvatarUrl} from "$lib/avatar";
 
     let sidebarOpen = $state(false);
     let fileInput: HTMLInputElement | undefined = $state();
@@ -36,9 +34,7 @@
 
     // Update iconUrl whenever data.avatarId or data.name changes
     $effect(() => {
-        iconUrl = data.avatarId
-            ? BACKEND_URL + "/api/v1/avatar/project/" + data.avatarId + "?size=1024"
-            : PUBLIC_FALLBACK_IMG_URL.replaceAll("%name%", encodeURIComponent(data.name));
+        iconUrl = projectAvatarUrl(data.avatarId, data.name);
     });
 
     let availableScopes: {name: string, description: string}[] = $state([]);

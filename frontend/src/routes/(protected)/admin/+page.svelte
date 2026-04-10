@@ -4,16 +4,40 @@
     import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import AdminSidebar from "$lib/components/admin/AdminSidebar.svelte";
+    import {onMount} from "svelte";
+    import {toastStore} from "$lib/components/toasts/toastStore";
+    import {apiCall} from "$lib/api";
 
     let sidebarOpen = $state(false);
 
+
     // Placeholder data
-    const stats = [
-        { label: "Total Users", value: "1,234", icon: "users", color: "text-blue-500", bg: "bg-blue-100 dark:bg-blue-900/30" },
-        { label: "Active Projects", value: "85", icon: "folder", color: "text-green-500", bg: "bg-green-100 dark:bg-green-900/30" },
-        { label: "Daily Logins", value: "452", icon: "login", color: "text-orange-500", bg: "bg-orange-100 dark:bg-orange-900/30" },
+    const stats = $state([
+        { label: "Total Users", value: "0", icon: "users", color: "text-blue-500", bg: "bg-blue-100 dark:bg-blue-900/30" },
+        { label: "Active Projects", value: "0", icon: "folder", color: "text-green-500", bg: "bg-green-100 dark:bg-green-900/30" },
+        { label: "Active OAuth Tokens", value: "0", icon: "login", color: "text-orange-500", bg: "bg-orange-100 dark:bg-orange-900/30" },
         { label: "New Users (24h)", value: "12", icon: "user-plus", color: "text-purple-500", bg: "bg-purple-100 dark:bg-purple-900/30" },
-    ];
+    ]);
+
+    onMount(async () => {
+        const res = await apiCall('/api/v1/internal/admin/stats');
+
+        if(!res.ok) {
+            console.error("Failed to fetch admin stats");
+            console.error(await res.text());
+            toastStore.add("Failed to fetch admin stats", { type: "error" });
+            return;
+        }
+
+        const data = await res.json();
+        console.log("Admin stats:", data);
+
+        stats[0].value = data.users ?? 0;
+        stats[1].value = data.projects ?? 0;
+        stats[2].value = data.tokens ?? 0;
+        stats[3].value = "?";
+
+    });
 
     const recentActivity = [
         { user: "Alice Smith", action: "Created project 'My Store'", time: "2 hours ago" },
@@ -41,9 +65,6 @@
                     Manage the ArenAuth instance, users, and global settings.
                 </p>
             </div>
-            <span class="inline-block px-4 py-1.5 mt-6 mb-3 text-sm font-medium rounded-full bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
-                Placeholder Data!
-            </span>
         </header>
 
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

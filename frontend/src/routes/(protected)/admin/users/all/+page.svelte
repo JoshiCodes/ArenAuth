@@ -8,6 +8,7 @@
     import {onMount} from "svelte";
     import {apiCall} from "$lib/api";
     import {toastStore} from "$lib/components/toasts/toastStore";
+    import {goto} from "$app/navigation";
 
     let { data } = $props();
 
@@ -77,9 +78,9 @@
         searchOpen = !searchOpen;
     }
 
-    function editUser(id: string) {
-        console.log("Editing user", id);
-        toastStore.add("User editing not implemented yet.", {
+    function deleteUser(id: string) {
+        console.log("Deleting user", id);
+        toastStore.add("User deletion is not implemented yet.", {
             type: "warning"
         });
     }
@@ -161,7 +162,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <button
-                                            onclick={() => editUser(user.id)}
+                                            onclick={() => goto("/admin/users/" + user.id)}
                                             class="p-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 transition-colors"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
@@ -170,7 +171,7 @@
                                         <span class="sr-only">Edit</span>
                                     </button>
                                     <button
-                                            onclick={() => editUser(user.id)}
+                                            onclick={() => deleteUser(user.id)}
                                             class="p-2 rounded-lg hover:bg-red-200 dark:hover:bg-red-400/50 text-red-600 dark:text-red-400 transition-colors"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">

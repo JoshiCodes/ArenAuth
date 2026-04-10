@@ -13,3 +13,13 @@ type FullUser = {
     roles: string[],
     projects: string[] | null
 }
+
+type FullProject = {
+    id: string,
+    name: string,
+    description: string,
+    avatarId: string | null,
+    ownerId: string,
+    redirectUris: string[],
+    createdAt: Date
+}

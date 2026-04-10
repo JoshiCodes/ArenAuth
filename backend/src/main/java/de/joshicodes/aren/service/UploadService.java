@@ -374,35 +374,22 @@ public class UploadService {
             g2d.fillRect(0, 0, baseSize, baseSize);
 
             if (initialChar != null) {
-                String text = initialChar.toString();
-                int fontSize = (int) (baseSize * 0.6); // 60%
-                Font font = new Font("SansSerif", Font.BOLD, fontSize);
-                g2d.setFont(font);
-
-                FontMetrics fm = g2d.getFontMetrics();
-                int textWidth = fm.stringWidth(text);
-                int textHeight = fm.getAscent();
-
-                int x = (baseSize - textWidth) / 2;
-                int y = (baseSize - fm.getHeight()) / 2 + fm.getAscent();
-
-                g2d.setColor(Color.WHITE);
-                g2d.drawString(text, x, y);
-            } else {
-                // No Initial found.
-                String resourcePath = "/img/default_overlay.png";
+                String charKey = initialChar.toString().toLowerCase();
+                String resourcePath = "/img/initials/" + charKey + ".png";
                 try (InputStream in = getClass().getResourceAsStream(resourcePath)) {
                     if (in != null) {
-                        BufferedImage overlay = ImageIO.read(in);
-                        int overlaySize = (int) (baseSize * 0.8); // 80%
-                        Image scaledOverlay = overlay.getScaledInstance(overlaySize, overlaySize, Image.SCALE_SMOOTH);
-                        int x = (baseSize - overlaySize) / 2;
-                        int y = (baseSize - overlaySize) / 2;
-                        g2d.drawImage(scaledOverlay, x, y, null);
+                        BufferedImage charImage = ImageIO.read(in);
+                        int charSize = (int) (baseSize * 0.6); // 60%
+                        int x = (baseSize - charSize) / 2;
+                        int y = (baseSize - charSize) / 2;
+                        g2d.drawImage(charImage.getScaledInstance(charSize, charSize, Image.SCALE_SMOOTH), x, y, null);
                     } else {
-                        LOG.warn("Fallback default avatar resource not found at {}", resourcePath);
+                        LOG.warn("Initial avatar resource not found at {}, falling back to default overlay", resourcePath);
+                        renderDefaultOverlay(g2d, baseSize);
                     }
                 }
+            } else {
+                renderDefaultOverlay(g2d, baseSize);
             }
 
         } finally {
@@ -419,6 +406,22 @@ public class UploadService {
         LOG.info("Generated initial avatar for '{}': {}", name, targetFile.getName());
 
         return Pair.of(finalBytes, mimeType);
+    }
+
+    private void renderDefaultOverlay(Graphics2D g2d, int baseSize) throws IOException {
+        String resourcePath = "/img/default_overlay.png";
+        try (InputStream in = getClass().getResourceAsStream(resourcePath)) {
+            if (in != null) {
+                BufferedImage overlay = ImageIO.read(in);
+                int overlaySize = (int) (baseSize * 0.8); // 80%
+                Image scaledOverlay = overlay.getScaledInstance(overlaySize, overlaySize, Image.SCALE_SMOOTH);
+                int x = (baseSize - overlaySize) / 2;
+                int y = (baseSize - overlaySize) / 2;
+                g2d.drawImage(scaledOverlay, x, y, null);
+            } else {
+                LOG.warn("Fallback default avatar resource not found at {}", resourcePath);
+            }
+        }
     }
 
     public static enum UploadType {

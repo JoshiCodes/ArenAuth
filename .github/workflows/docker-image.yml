@@ -45,10 +45,10 @@ jobs:
 
       - name: Build backend native binary (arm64)
         working-directory: ./backend
-        run: ./mvnw -B clean package -Dnative -Dquarkus.native.container-build=true -DskipTests
+        run: ./mvnw -B clean package -DskipTests
 
       - name: Build backend image (arm64)
-        run: docker build -f backend/src/main/docker/Dockerfile.native -t ${{ env.IMAGE_BASE }}/backend:arm64 ./backend
+        run: docker build -f backend/src/main/docker/Dockerfile.jvm -t ${{ env.IMAGE_BASE }}/backend:arm64 ./backend
 
       - name: Push backend image (arm64)
         run: docker push ${{ env.IMAGE_BASE }}/backend:arm64
@@ -80,10 +80,10 @@ jobs:
 
       - name: Build backend native binary (amd64)
         working-directory: ./backend
-        run: ./mvnw -B clean package -Dnative -Dquarkus.native.container-build=true -DskipTests
+        run: ./mvnw -B clean package -DskipTests
 
       - name: Build backend image (amd64)
-        run: docker build -f backend/src/main/docker/Dockerfile.native -t ${{ env.IMAGE_BASE }}/backend:amd64 ./backend
+        run: docker build -f backend/src/main/docker/Dockerfile.jvm -t ${{ env.IMAGE_BASE }}/backend:amd64 ./backend
 
       - name: Push backend image (amd64)
         run: docker push ${{ env.IMAGE_BASE }}/backend:amd64

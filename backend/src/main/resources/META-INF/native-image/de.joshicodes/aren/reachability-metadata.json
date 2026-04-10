@@ -1,12 +1,14 @@
 {
-  "foreign": [
-    {
-      "kind": "downcall",
-      "parameterTypes": [
-        "long",
-        "long"
-      ],
-      "returnType": "long"
-    }
-  ]
+  "properties": {
+    "foreign": [
+      {
+        "kind": "downcall",
+        "parameterTypes": [
+          "long",
+          "long"
+        ],
+        "returnType": "long"
+      }
+    ]
+  }
 }

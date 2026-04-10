@@ -1,8 +1,7 @@
 {
-  "properties": {
-    "foreign": [
+  "foreign": {
+    "downcalls": [
       {
-        "kind": "downcall",
         "parameterTypes": [
           "long",
           "long"

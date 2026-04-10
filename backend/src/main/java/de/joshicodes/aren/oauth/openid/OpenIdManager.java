@@ -28,6 +28,7 @@ public class OpenIdManager {
                 .subject(user.id.toString())
                 .claim("email", user.email)
                 .claim("name", user.username)
+                .claim("picture", buildAvatarUrl(user))
                 .issuedAt(token.createdAt)
                 .expiresAt(token.accessTokenExpiresAt)
                 .audience(token.project.id.toString());
@@ -40,6 +41,10 @@ public class OpenIdManager {
                 .keyId(activeKey.kid)
                 .header("type", "JWT")
                 .sign(activeKey.getPrivateKey());
+    }
+
+    private String buildAvatarUrl(final User user) {
+        return issuer + "/api/v1/avatar/" + (user.avatarId == null ? ("default/" + user.username) : "user" + user.avatarId);
     }
 
 }

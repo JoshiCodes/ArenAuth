@@ -31,11 +31,11 @@ public class UploadService {
     @ConfigProperty(name = "aren.max-upload-size", defaultValue = "5242880")
     long MAX_UPLOAD_SIZE;
 
-    @ConfigProperty(name = "aren.avatar-gradient.min-color", defaultValue = "#222222")
-    String GRADIENT_MIN_COLOR_HEX;
+    @ConfigProperty(name = "aren.avatar-gradient.from", defaultValue = "#222222")
+    String GRADIENT_FROM;
 
-    @ConfigProperty(name = "aren.avatar-gradient.max-color", defaultValue = "#ffffff")
-    String GRADIENT_MAX_COLOR_HEX;
+    @ConfigProperty(name = "aren.avatar-gradient.to", defaultValue = "#ffffff")
+    String GRADIENT_TO;
 
     @ConfigProperty(name = "aren.avatar-initials.allowed-chars", defaultValue = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
     String ALLOWED_INITIALS_FOR_GENERATIONS;
@@ -363,11 +363,8 @@ public class UploadService {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-            Color minColor = parseHexColor(GRADIENT_MIN_COLOR_HEX != null ? GRADIENT_MIN_COLOR_HEX : "#222222");
-            Color maxColor = parseHexColor(GRADIENT_MAX_COLOR_HEX != null ? GRADIENT_MAX_COLOR_HEX : "#ffffff");
-
-            Color c1 = randomColorInRange(minColor, maxColor);
-            Color c2 = randomColorInRange(minColor, maxColor);
+            Color c1 = parseHexColor(GRADIENT_FROM != null ? GRADIENT_FROM : "#ffffff");
+            Color c2 = parseHexColor(GRADIENT_TO != null ? GRADIENT_TO : "#ffffff");
 
             GradientPaint gradient = new GradientPaint(
                     0, 0, c1,

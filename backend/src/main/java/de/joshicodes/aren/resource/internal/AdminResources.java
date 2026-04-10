@@ -9,6 +9,7 @@ import io.quarkus.panache.common.Sort;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
@@ -16,6 +17,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Path("/api/v1/internal/admin")
 @RolesAllowed("admin")
@@ -55,6 +57,35 @@ public class AdminResources {
                 "total_pages", (int) Math.ceil(count / (double) size),
                 "total_count", count
         )).build();
+
+    }
+
+    @GET
+    @Path("/users/{id}")
+    public Response getAllUsers(@PathParam("id") String id) {
+
+        final UUID uuid;
+        try {
+            uuid = UUID.fromString(id);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    Map.of("error", "invalid_id")
+            ).build();
+        }
+        final User user = User.findById(uuid);
+        if(user == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        final List<Project> projects = user.ownedProjects;
+        final List<ProjectDTO> projectDTOs = projects.stream().map(ProjectDTO::from).toList();
+
+        return Response.ok(
+                Map.of(
+                        "user", UserDTO.from(user, true),
+                        "projects", projectDTOs
+                )
+        ).build();
 
     }
 

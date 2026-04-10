@@ -5,7 +5,7 @@
     interface Props {
         user?: {
             name: string;
-            avatarId: string;
+            avatarId?: string | null;
         }
         size?: number;
         class?: string;

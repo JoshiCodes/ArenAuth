@@ -1,4 +1,13 @@
 {
+  "reflection": [
+    {
+      "type": "sun.font.HBShaper",
+      "jniAccessible": true,
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true,
+      "allDeclaredConstructors": true
+    }
+  ],
   "foreign": {
     "downcalls": [
       {
@@ -58,6 +67,30 @@
           "int",
           "long",
           "long"
+        ]
+      },
+      {
+        "returnType": "void",
+        "parameterTypes": [
+          "long",
+          "int",
+          "int"
+        ]
+      },
+      {
+        "returnType": "void",
+        "parameterTypes": [
+          "long",
+          "long",
+          "int",
+          "int"
+        ]
+      },
+      {
+        "returnType": "void",
+        "parameterTypes": [
+          "long",
+          "int"
         ]
       }
     ]

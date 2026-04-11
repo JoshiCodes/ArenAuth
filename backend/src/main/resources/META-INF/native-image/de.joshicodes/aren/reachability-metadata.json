@@ -2,25 +2,16 @@
   "foreign": {
     "downcalls": [
       {
-        "name": "hb_buffer_create",
-        "linkageName": "hb_buffer_create",
-        "callingConvention": "default",
         "returnType": "long",
         "parameterTypes": []
       },
       {
-        "name": "hb_buffer_destroy",
-        "linkageName": "hb_buffer_destroy",
-        "callingConvention": "default",
         "returnType": "void",
         "parameterTypes": [
           "long"
         ]
       },
       {
-        "name": "hb_buffer_add_utf16",
-        "linkageName": "hb_buffer_add_utf16",
-        "callingConvention": "default",
         "returnType": "void",
         "parameterTypes": [
           "long",
@@ -31,9 +22,6 @@
         ]
       },
       {
-        "name": "hb_shape",
-        "linkageName": "hb_shape",
-        "callingConvention": "default",
         "returnType": "void",
         "parameterTypes": [
           "long",
@@ -43,9 +31,6 @@
         ]
       },
       {
-        "name": "hb_buffer_get_glyph_infos",
-        "linkageName": "hb_buffer_get_glyph_infos",
-        "callingConvention": "default",
         "returnType": "long",
         "parameterTypes": [
           "long",
@@ -53,37 +38,12 @@
         ]
       },
       {
-        "name": "hb_buffer_get_glyph_positions",
-        "linkageName": "hb_buffer_get_glyph_positions",
-        "callingConvention": "default",
-        "returnType": "long",
-        "parameterTypes": [
-          "long",
-          "long"
-        ]
-      },
-      {
-        "name": "hb_buffer_get_length",
-        "linkageName": "hb_buffer_get_length",
-        "callingConvention": "default",
         "returnType": "int",
         "parameterTypes": [
           "long"
         ]
       },
       {
-        "name": "hb_buffer_guess_segment_properties",
-        "linkageName": "hb_buffer_guess_segment_properties",
-        "callingConvention": "default",
-        "returnType": "void",
-        "parameterTypes": [
-          "long"
-        ]
-      },
-      {
-        "name": "hb_face_create",
-        "linkageName": "hb_face_create",
-        "callingConvention": "default",
         "returnType": "long",
         "parameterTypes": [
           "long",
@@ -91,51 +51,12 @@
         ]
       },
       {
-        "name": "hb_face_destroy",
-        "linkageName": "hb_face_destroy",
-        "callingConvention": "default",
-        "returnType": "void",
-        "parameterTypes": [
-          "long"
-        ]
-      },
-      {
-        "name": "hb_font_create",
-        "linkageName": "hb_font_create",
-        "callingConvention": "default",
-        "returnType": "long",
-        "parameterTypes": [
-          "long"
-        ]
-      },
-      {
-        "name": "hb_font_destroy",
-        "linkageName": "hb_font_destroy",
-        "callingConvention": "default",
-        "returnType": "void",
-        "parameterTypes": [
-          "long"
-        ]
-      },
-      {
-        "name": "hb_blob_create",
-        "linkageName": "hb_blob_create",
-        "callingConvention": "default",
         "returnType": "long",
         "parameterTypes": [
           "long",
           "int",
           "int",
           "long",
-          "long"
-        ]
-      },
-      {
-        "name": "hb_blob_destroy",
-        "linkageName": "hb_blob_destroy",
-        "callingConvention": "default",
-        "returnType": "void",
-        "parameterTypes": [
           "long"
         ]
       }

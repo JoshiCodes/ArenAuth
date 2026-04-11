@@ -1,0 +1,89 @@
+[
+  {
+    "type": "downcall",
+    "name": "hb_buffer_create",
+    "linkage_name": "hb_buffer_create",
+    "calling_convention": "default",
+    "return_type": "long",
+    "parameter_types": []
+  },
+  {
+    "type": "downcall",
+    "name": "hb_buffer_destroy",
+    "linkage_name": "hb_buffer_destroy",
+    "calling_convention": "default",
+    "return_type": "void",
+    "parameter_types": [
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_buffer_add_utf16",
+    "linkage_name": "hb_buffer_add_utf16",
+    "calling_convention": "default",
+    "return_type": "void",
+    "parameter_types": [
+      "long",
+      "long",
+      "int",
+      "int",
+      "int"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_shape",
+    "linkage_name": "hb_shape",
+    "calling_convention": "default",
+    "return_type": "void",
+    "parameter_types": [
+      "long",
+      "long",
+      "long",
+      "int"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_buffer_get_glyph_infos",
+    "linkage_name": "hb_buffer_get_glyph_infos",
+    "calling_convention": "default",
+    "return_type": "long",
+    "parameter_types": [
+      "long",
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_buffer_get_glyph_positions",
+    "linkage_name": "hb_buffer_get_glyph_positions",
+    "calling_convention": "default",
+    "return_type": "long",
+    "parameter_types": [
+      "long",
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_buffer_get_length",
+    "linkage_name": "hb_buffer_get_length",
+    "calling_convention": "default",
+    "return_type": "int",
+    "parameter_types": [
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_buffer_guess_segment_properties",
+    "linkage_name": "hb_buffer_guess_segment_properties",
+    "calling_convention": "default",
+    "return_type": "void",
+    "parameter_types": [
+      "long"
+    ]
+  }
+]

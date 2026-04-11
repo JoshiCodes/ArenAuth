@@ -28,49 +28,6 @@ public class UploadService {
     };
     private final long MAX_FILE_SIZE_DEFAULT = 5 * 1024 * 1024; // 5MB
 
-    private static final long[] BITMAP_FONT = new long[256];
-
-    static {
-        // A-Z
-        BITMAP_FONT['A'] = 0x183C66667E666600L;
-        BITMAP_FONT['B'] = 0x7C66667C66667C00L;
-        BITMAP_FONT['C'] = 0x3C66606060663C00L;
-        BITMAP_FONT['D'] = 0x786C6666666C7800L;
-        BITMAP_FONT['E'] = 0x7E60607C60607E00L;
-        BITMAP_FONT['F'] = 0x7E60607860606000L;
-        BITMAP_FONT['G'] = 0x3C66606E66663E00L;
-        BITMAP_FONT['H'] = 0x6666667E66666600L;
-        BITMAP_FONT['I'] = 0x3C18181818183C00L;
-        BITMAP_FONT['J'] = 0x1E0C0C0C0C6C3800L;
-        BITMAP_FONT['K'] = 0x666C7870786C6600L;
-        BITMAP_FONT['L'] = 0x6060606060607E00L;
-        BITMAP_FONT['M'] = 0x63777F6B63636300L;
-        BITMAP_FONT['N'] = 0x66767E7E6E666600L;
-        BITMAP_FONT['O'] = 0x3C66666666663C00L;
-        BITMAP_FONT['P'] = 0x7C66667C60606000L;
-        BITMAP_FONT['Q'] = 0x3C666666666C3600L;
-        BITMAP_FONT['R'] = 0x7C66667C786C6600L;
-        BITMAP_FONT['S'] = 0x3C66603C06663C00L;
-        BITMAP_FONT['T'] = 0x7E18181818181800L;
-        BITMAP_FONT['U'] = 0x6666666666663C00L;
-        BITMAP_FONT['V'] = 0x66666666663C1800L;
-        BITMAP_FONT['W'] = 0x6363636B7F776300L;
-        BITMAP_FONT['X'] = 0x66663C183C666600L;
-        BITMAP_FONT['Y'] = 0x6666663C18181800L;
-        BITMAP_FONT['Z'] = 0x7E060C1830607E00L;
-        // 0-9
-        BITMAP_FONT['0'] = 0x3C666E7676663C00L;
-        BITMAP_FONT['1'] = 0x1838181818187E00L;
-        BITMAP_FONT['2'] = 0x3C66060C30607E00L;
-        BITMAP_FONT['3'] = 0x3C66061C06663C00L;
-        BITMAP_FONT['4'] = 0x060E1E367E060600L;
-        BITMAP_FONT['5'] = 0x7E607C0606663C00L;
-        BITMAP_FONT['6'] = 0x1C30607C66663C00L;
-        BITMAP_FONT['7'] = 0x7E060C1830303000L;
-        BITMAP_FONT['8'] = 0x3C66663C66663C00L;
-        BITMAP_FONT['9'] = 0x3C66663E060C3800L;
-    }
-
     @ConfigProperty(name = "aren.max-upload-size", defaultValue = "5242880")
     long MAX_UPLOAD_SIZE;
 
@@ -348,6 +305,8 @@ public class UploadService {
         return new Color(r, g, b);
     }
 
+
+
     private Character findInitial(String name) {
         if (name == null) {
             return null;
@@ -406,8 +365,11 @@ public class UploadService {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-            Color c1 = parseHexColor(GRADIENT_FROM != null ? GRADIENT_FROM : "#ffffff");
-            Color c2 = parseHexColor(GRADIENT_TO != null ? GRADIENT_TO : "#ffffff");
+            Color minColor = parseHexColor(GRADIENT_FROM != null ? GRADIENT_FROM : "#222222");
+            Color maxColor = parseHexColor(GRADIENT_TO != null ? GRADIENT_TO : "#ffffff");
+
+            Color c1 = randomColorInRange(minColor, maxColor);
+            Color c2 = randomColorInRange(minColor, maxColor);
 
             GradientPaint gradient = new GradientPaint(
                     0, 0, c1,
@@ -417,9 +379,35 @@ public class UploadService {
             g2d.fillRect(0, 0, baseSize, baseSize);
 
             if (initialChar != null) {
-                drawBitmapInitial(g2d, initialChar, baseSize);
+                String text = initialChar.toString();
+                int fontSize = (int) (baseSize * 0.6); // 60%
+                Font font = new Font("SansSerif", Font.BOLD, fontSize);
+                g2d.setFont(font);
+
+                FontMetrics fm = g2d.getFontMetrics();
+                int textWidth = fm.stringWidth(text);
+                int textHeight = fm.getAscent();
+
+                int x = (baseSize - textWidth) / 2;
+                int y = (baseSize - fm.getHeight()) / 2 + fm.getAscent();
+
+                g2d.setColor(Color.WHITE);
+                g2d.drawString(text, x, y);
             } else {
-                renderDefaultOverlay(g2d, baseSize);
+                // No Initial found.
+                String resourcePath = "/img/default_overlay.png";
+                try (InputStream in = getClass().getResourceAsStream(resourcePath)) {
+                    if (in != null) {
+                        BufferedImage overlay = ImageIO.read(in);
+                        int overlaySize = (int) (baseSize * 0.8); // 80%
+                        Image scaledOverlay = overlay.getScaledInstance(overlaySize, overlaySize, Image.SCALE_SMOOTH);
+                        int x = (baseSize - overlaySize) / 2;
+                        int y = (baseSize - overlaySize) / 2;
+                        g2d.drawImage(scaledOverlay, x, y, null);
+                    } else {
+                        LOG.warn("Fallback default avatar resource not found at {}", resourcePath);
+                    }
+                }
             }
 
         } finally {
@@ -436,49 +424,6 @@ public class UploadService {
         LOG.info("Generated initial avatar for '{}': {}", name, targetFile.getName());
 
         return Pair.of(finalBytes, mimeType);
-    }
-
-    private void drawBitmapInitial(Graphics2D g2d, char initial, int baseSize) {
-        long bitmap = BITMAP_FONT[Character.toUpperCase(initial)];
-        if (bitmap == 0) {
-            try {
-                renderDefaultOverlay(g2d, baseSize);
-            } catch (IOException e) {
-                LOG.error("Could not render default overlay", e);
-            }
-            return;
-        }
-
-        int charSize = (int) (baseSize * 0.6); // 60%
-        int xOffset = (baseSize - charSize) / 2;
-        int yOffset = (baseSize - charSize) / 2;
-        int pixelSize = charSize / 8;
-
-        g2d.setColor(Color.WHITE);
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                // Check bit from left to right (7 to 0)
-                if (((bitmap >> ((7 - row) * 8 + (7 - col))) & 1) != 0) {
-                    g2d.fillRect(xOffset + col * pixelSize, yOffset + row * pixelSize, pixelSize, pixelSize);
-                }
-            }
-        }
-    }
-
-    private void renderDefaultOverlay(Graphics2D g2d, int baseSize) throws IOException {
-        String resourcePath = "/img/default_overlay.png";
-        try (InputStream in = getClass().getResourceAsStream(resourcePath)) {
-            if (in != null) {
-                BufferedImage overlay = ImageIO.read(in);
-                int overlaySize = (int) (baseSize * 0.8); // 80%
-                Image scaledOverlay = overlay.getScaledInstance(overlaySize, overlaySize, Image.SCALE_SMOOTH);
-                int x = (baseSize - overlaySize) / 2;
-                int y = (baseSize - overlaySize) / 2;
-                g2d.drawImage(scaledOverlay, x, y, null);
-            } else {
-                LOG.warn("Fallback default avatar resource not found at {}", resourcePath);
-            }
-        }
     }
 
     public static enum UploadType {

@@ -85,5 +85,70 @@
     "parameter_types": [
       "long"
     ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_face_create",
+    "linkage_name": "hb_face_create",
+    "calling_convention": "default",
+    "return_type": "long",
+    "parameter_types": [
+      "long",
+      "int"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_face_destroy",
+    "linkage_name": "hb_face_destroy",
+    "calling_convention": "default",
+    "return_type": "void",
+    "parameter_types": [
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_font_create",
+    "linkage_name": "hb_font_create",
+    "calling_convention": "default",
+    "return_type": "long",
+    "parameter_types": [
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_font_destroy",
+    "linkage_name": "hb_font_destroy",
+    "calling_convention": "default",
+    "return_type": "void",
+    "parameter_types": [
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_blob_create",
+    "linkage_name": "hb_blob_create",
+    "calling_convention": "default",
+    "return_type": "long",
+    "parameter_types": [
+      "long",
+      "int",
+      "int",
+      "long",
+      "long"
+    ]
+  },
+  {
+    "type": "downcall",
+    "name": "hb_blob_destroy",
+    "linkage_name": "hb_blob_destroy",
+    "calling_convention": "default",
+    "return_type": "void",
+    "parameter_types": [
+      "long"
+    ]
   }
 ]

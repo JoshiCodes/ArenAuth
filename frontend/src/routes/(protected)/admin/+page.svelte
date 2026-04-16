@@ -1,7 +1,6 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import AdminSidebar from "$lib/components/admin/AdminSidebar.svelte";
     import {onMount} from "svelte";
@@ -47,7 +46,6 @@
 
 </script>
 
-<BackgroundBlobs classes="bg-red-500 dark:bg-red-700/50" />
 <BackgroundGrid />
 
 <Navbar bind:sidebarOpen />

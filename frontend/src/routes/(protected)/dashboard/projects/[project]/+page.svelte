@@ -13,7 +13,6 @@
     import BarSelect from "$lib/components/ui/forms/BarSelect.svelte";
     import {toastStore} from "$lib/components/toasts/toastStore";
     import {BACKEND_URL} from "$lib/vars";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import {projectAvatarUrl} from "$lib/avatar";
 
@@ -188,7 +187,6 @@
     }
 </script>
 
-<BackgroundBlobs />
 <BackgroundGrid />
 <Navbar bind:sidebarOpen />
 <DashboardSidebar bind:open={sidebarOpen} />

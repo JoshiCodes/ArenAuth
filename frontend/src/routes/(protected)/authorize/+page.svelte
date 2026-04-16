@@ -5,7 +5,6 @@
     import {goto} from "$app/navigation";
     import {onMount} from "svelte";
     import {apiCall, fetchAvailableScopes} from "$lib/api";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import {projectAvatarUrl} from "$lib/avatar";
 
@@ -89,7 +88,6 @@
 </script>
 
 <Navbar />
-<BackgroundBlobs />
 <BackgroundGrid />
 
 <div class="min-h-[calc(100vh-64px)] flex items-center justify-center mt-6 md:mt-12 p-4">

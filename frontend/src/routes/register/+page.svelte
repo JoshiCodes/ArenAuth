@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
+    import {enhance} from '$app/forms';
     import Navbar from '$lib/components/Navbar.svelte';
-    import BackgroundBlobs from '$lib/components/BackgroundBlobs.svelte';
     import BackgroundGrid from '$lib/components/BackgroundGrid.svelte';
     import Button from '$lib/components/ui/Button.svelte';
     import AuthCard from '$lib/components/ui/AuthCard.svelte';
@@ -27,7 +26,6 @@
 
 </script>
 
-<BackgroundBlobs />
 <BackgroundGrid />
 <Navbar />
 

@@ -2,7 +2,6 @@
     import Navbar from "$lib/components/Navbar.svelte";
     import DashboardSidebar from "$lib/components/dashboard/DashboardSidebar.svelte";
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import {onMount} from "svelte";
@@ -29,7 +28,6 @@
     });
 </script>
 
-<BackgroundBlobs />
 <BackgroundGrid />
 
 <Navbar bind:sidebarOpen />

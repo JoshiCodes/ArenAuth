@@ -1,7 +1,6 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import DashboardComponent from "$lib/components/dashboard/DashboardComponent.svelte";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import AdminSidebar from "$lib/components/admin/AdminSidebar.svelte";
     import {slide} from 'svelte/transition';
@@ -86,7 +85,6 @@
     }
 </script>
 
-<BackgroundBlobs classes="bg-red-500 dark:bg-red-700/50" />
 <BackgroundGrid />
 
 <Navbar bind:sidebarOpen />
@@ -195,14 +193,13 @@
                 <div class="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
                     <div class="flex items-center gap-2">
                         <span>Show</span>
-                        <select 
-                            value={pageSize}
+                        <select
                             onchange={(e) => updatePageSize(Number(e.currentTarget.value))}
                             class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-2 py-1 focus:outline-hidden focus:ring-2 focus:ring-red-500"
                         >
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
+                            <option value={25} selected={pageSize===25}>25</option>
+                            <option value={50} selected={pageSize===50}>50</option>
+                            <option value={100} selected={pageSize===100}>100</option>
                         </select>
                         <span>entries</span>
                     </div>

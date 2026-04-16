@@ -7,7 +7,6 @@
     import {onMount} from "svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import BottomNotification from "$lib/components/ui/BottomNotification.svelte";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
     import {userAvatarUrl} from "$lib/avatar";
 
@@ -66,7 +65,6 @@
     }
 </script>
 
-<BackgroundBlobs />
 <BackgroundGrid />
 
 <Navbar bind:sidebarOpen />

@@ -9,7 +9,6 @@
     import ProjectCardSkeleton from "$lib/components/dashboard/ProjectCardSkeleton.svelte";
     import {BACKEND_URL} from "$lib/vars";
     import BackgroundBlob from "$lib/components/BackgroundBlob.svelte";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
 
     let sidebarOpen = $state(false);
@@ -29,7 +28,6 @@
 
 </script>
 
-<BackgroundBlobs />
 <BackgroundGrid />
 
 <Navbar bind:sidebarOpen />

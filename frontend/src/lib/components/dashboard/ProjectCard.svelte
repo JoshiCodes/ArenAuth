@@ -4,7 +4,6 @@
 
     export let project: { name: string, id: string, avatarId: string };
     export let isClickable: boolean = true;
-
     const iconUrl = projectAvatarUrl(project.avatarId, project.name);
 
 </script>

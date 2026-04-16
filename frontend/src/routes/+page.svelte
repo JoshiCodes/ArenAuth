@@ -74,7 +74,7 @@
                     <a class="w-full sm:w-auto" href="https://github.com/JoshiCodes/ArenAuth" target="_blank">
                         <Button class="w-full px-8 py-6 text-lg border border-zinc-200 dark:border-zinc-800" size="lg"
                                 variant="ghost">
-                            View Documentation
+                            View on Github
                         </Button>
                     </a>
                 </div>
@@ -88,8 +88,8 @@
                         </div>
 
                         <div class="absolute top-10 left-0 z-20 animate-in fade-in slide-in-from-left-8 duration-700">
-                            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl shadow-2xl flex items-center gap-4 min-w-[240px]">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500"></div>
+                            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl shadow-2xl flex items-center gap-4 min-w-60 cursor-default hover:-translate-y-1 hover:-translate-x-1 transition-all duration-300">
+                                <div class="w-12 h-12 rounded-full bg-linear-to-tr from-violet-500 to-fuchsia-500"></div>
                                 <div>
                                     <div class="text-sm font-bold text-zinc-900 dark:text-white">JoshiCodes</div>
                                     <div class="text-xs text-zinc-500">active_session: 2h 4m</div>
@@ -101,7 +101,7 @@
                         <div class="relative z-10 w-full max-w-85 bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded-lg p-8 shadow-[12px_12px_0px_0px_rgba(124,58,237,0.1)] dark:shadow-[12px_12px_0px_0px_rgba(139,92,246,0.1)]">
                             <div class="flex justify-between items-center mb-8">
                                 <div class="font-black tracking-tighter text-xl">ArenAuth</div>
-                                <div class="text-[10px] text-emerald-500 dark:text-emerald-600 font-mono p-1 bg-zinc-100 dark:bg-zinc-800 rounded">v1.0.0</div>
+                                <div class="text-[10px] text-emerald-500 dark:text-emerald-600 cursor-default hover:text-emerald-400 transition-all duration-300 hover:shadow-emerald-300 hover:shadow-xl font-mono p-1 bg-zinc-100 dark:bg-zinc-800 rounded">v1.0.0</div>
                             </div>
                             <div class="space-y-4">
                                 <div class="space-y-1.5">
@@ -119,7 +119,7 @@
                         </div>
 
                         <div class="absolute bottom-12 right-0 z-20 animate-in fade-in slide-in-from-right-8 duration-1000 delay-300">
-                            <div class="bg-[#09090b] text-[#a1a1aa] p-5 rounded-lg border border-zinc-800 shadow-2xl font-mono text-[10px] space-y-1 min-w-[280px]">
+                            <div class="bg-gray-100 dark:bg-[#09090b] text-[#a1a1aa] p-5 rounded-lg border border-zinc-800 shadow-2xl font-mono text-[10px] space-y-1 min-w-70 cursor-default hover:translate-y-1 hover:translate-x-1 transition-all duration-300">
                                 <div class="flex justify-between text-zinc-500 border-b border-zinc-800 pb-2 mb-2">
                                     <span>GET /api/user/info</span>
                                     <span class="text-emerald-500">200 OK</span>
@@ -209,22 +209,22 @@
                     </p>
                 </div>
                 <div class="space-y-6">
-                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 hover:-translate-y-1 transition-all duration-300">
                         <span class="w-3 h-3 rounded-full bg-[#4695EB]"></span>
                         <span class="font-mono text-zinc-900 dark:text-white">quarkus.io</span>
                         <span class="text-zinc-500 dark:text-zinc-600 ml-auto text-sm">Backend Core (Java 21)</span>
                     </div>
-                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 hover:-translate-y-1 transition-all duration-300">
                         <span class="w-3 h-3 rounded-full bg-[#FF3E00]"></span>
                         <span class="font-mono text-zinc-900 dark:text-white">svelte.dev</span>
                         <span class="text-zinc-500 dark:text-zinc-600 ml-auto text-sm">Frontend Interface (Svelte 5)</span>
                     </div>
-                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 hover:-translate-y-1 transition-all duration-300">
                         <span class="w-3 h-3 rounded-full bg-[#336791]"></span>
                         <span class="font-mono text-zinc-900 dark:text-white">postgresql.org</span>
                         <span class="text-zinc-500 dark:text-zinc-600 ml-auto text-sm">Persistent Storage</span>
                     </div>
-                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                    <div class="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 hover:-translate-y-1 transition-all duration-300">
                         <span class="w-3 h-3 rounded-full bg-[#2496ED]"></span>
                         <span class="font-mono text-zinc-900 dark:text-white">docker.com</span>
                         <span class="text-zinc-500 dark:text-zinc-600 ml-auto text-sm">Containerization</span>

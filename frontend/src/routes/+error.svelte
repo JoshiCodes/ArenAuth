@@ -1,7 +1,6 @@
 <script lang="ts">
     import Navbar from "$lib/components/Navbar.svelte";
     import Footer from "$lib/components/Footer.svelte";
-    import BackgroundBlobs from "$lib/components/BackgroundBlobs.svelte";
     import BackgroundGrid from "$lib/components/BackgroundGrid.svelte";
 
     import {page} from '$app/state';
@@ -11,7 +10,6 @@
     const error: any = page.error;
 </script>
 
-<BackgroundBlobs />
 <BackgroundGrid />
 
 <Navbar />

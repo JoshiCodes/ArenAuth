@@ -1,6 +1,10 @@
+<div align="center">
+
+![Logo](https://raw.githubusercontent.com/JoshiCodes/ArenAuth/refs/heads/master/frontend/src/lib/assets/favicon.svg)
 # ArenAuth
 
 A modern OAuth 2.0 and OpenID Connect server built with Quarkus and Svelte.
+</div>
 
 ## Overview
 

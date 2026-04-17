@@ -121,7 +121,7 @@
                         <div class="absolute bottom-12 right-0 z-20 animate-in fade-in slide-in-from-right-8 duration-1000 delay-300">
                             <div class="bg-gray-100 dark:bg-[#09090b] text-[#a1a1aa] p-5 rounded-lg border border-zinc-800 shadow-2xl font-mono text-[10px] space-y-1 min-w-70 cursor-default hover:translate-y-1 hover:translate-x-1 transition-all duration-300">
                                 <div class="flex justify-between text-zinc-500 border-b border-zinc-800 pb-2 mb-2">
-                                    <span>GET /api/user/info</span>
+                                    <span>POST /oauth2/token</span>
                                     <span class="text-emerald-500">200 OK</span>
                                 </div>
                                 <div>&lbrace;</div>

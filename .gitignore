@@ -48,6 +48,9 @@ nb-configuration.xml
 # TLS Certificates
 .certs/
 
+# Backend
+backend/uploads
+
 # Frontend
 frontend/node_modules/
 frontend/dist/

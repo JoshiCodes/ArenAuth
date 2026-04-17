@@ -1,4 +1,5 @@
 <script lang="ts">
+  import favicon from '$lib/assets/favicon.svg';
   import {page} from "$app/state";
   import ThemeToggle from "$lib/components/ThemeToggle.svelte";
   import Button from "$lib/components/ui/Button.svelte";
@@ -27,6 +28,7 @@
     {#if isDashboard}
       <SidebarTrigger bind:open={sidebarOpen} />
     {/if}
+    <img src={favicon} alt="ArenAuth Logo" class="h-8 w-8" />
     <div class="text-2xl font-bold text-primary"><a href="/">ArenAuth</a></div>
   </div>
   <div class="ml-auto flex items-center gap-x-3 md:gap-x-6">

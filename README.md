@@ -1,15 +1,16 @@
 <div align="center">
 
-> [!Warning]
-> This Project is/was my first ever (bigger) Quarkus App. So its very buggy.
-> Also, its riddled with AI Slop Code. So, I decided to not continue on this project.
-> I will, however, recreate this project at a later time without that much AI.
-
 ![Logo](https://raw.githubusercontent.com/JoshiCodes/ArenAuth/refs/heads/master/frontend/src/lib/assets/favicon.svg)
 # ArenAuth
 
 A modern OAuth 2.0 and OpenID Connect server built with Quarkus and Svelte.
 </div>
+
+
+> [!Warning]
+> This Project is/was my first ever (bigger) Quarkus App. So its very buggy.
+> Also, its riddled with AI Slop Code. So, I decided to not continue on this project.
+> I will, however, recreate this project at a later time without that much AI.
 
 ## Overview
 

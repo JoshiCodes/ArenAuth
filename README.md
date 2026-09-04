@@ -1,5 +1,10 @@
 <div align="center">
 
+> [!Warning]
+> This Project is/was my first ever (bigger) Quarkus App. So its very buggy.
+> Also, its riddled with AI Slop Code. So, I decided to not continue on this project.
+> I will, however, recreate this project at a later time without that much AI.
+
 ![Logo](https://raw.githubusercontent.com/JoshiCodes/ArenAuth/refs/heads/master/frontend/src/lib/assets/favicon.svg)
 # ArenAuth
 
@@ -10,10 +15,7 @@ A modern OAuth 2.0 and OpenID Connect server built with Quarkus and Svelte.
 
 ArenAuth is a self-hosted authentication and authorization platform. It provides OAuth 2.0 flows, JWT-based security, user management, and project/application management with avatar support.
 
-> [!Warning]
-> This project is still in early development and should not be used in production environments. Use at your own risk.
-> Some important features, like PCKE support, an admin page (settings) and more are still missing.
-> If you want to contribute, feel free to open a PR or an issue. I would love to see this project grow and improve.
+
 
 ## Features
 
